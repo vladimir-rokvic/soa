@@ -44,7 +44,13 @@ func main() {
 	ser := &service.UserService{UserRepo: repo}
 	controller := controller.UserController{UserService: ser}
 
-	router.HandleFunc("/users/all", controller.GetAll)
+	//GET METHODS
+	router.HandleFunc("/users/all", controller.GetAll).Methods("GET")
+	router.HandleFunc("/users/{id}", controller.GetById).Methods("GET")
+
+	//POST METHODS
+	router.HandleFunc("/users/add", controller.Save).Methods("POST")
+	router.HandleFunc("/users/login", controller.LogIn).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
