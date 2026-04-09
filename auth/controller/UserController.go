@@ -104,3 +104,27 @@ req *http.Request){
 	writer.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(writer).Encode(map[string]string{"token": token})
 }
+
+func (user_controller *UserController) MyProfile(writer http.ResponseWriter,
+req *http.Request) {
+	claims, ok := utils.GetClaims(req)
+	if !ok {
+		fmt.Println("Error getting claims from request header")
+		writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	username := claims["username"].(string)
+	user := user_controller.UserService.GetByUsername(username)
+	if user == nil {
+		fmt.Printf("Error getting user by username: %s ", username)
+		writer.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	writer.Header().Set("Content-Type", "application/json")
+	userDto := dto.UserToDTO(user)
+	writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(writer).Encode(userDto)
+}
+

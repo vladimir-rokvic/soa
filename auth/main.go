@@ -13,6 +13,7 @@ import (
 	"auth_service/model"
 	"auth_service/repo"
 	"auth_service/service"
+	"auth_service/utils"
 )
 
 func init_db() *gorm.DB {
@@ -44,6 +45,16 @@ func main() {
 	ser := &service.UserService{UserRepo: repo}
 	controller := controller.UserController{UserService: ser}
 
+	//PROTECTED METHODS
+	protected := router.PathPrefix("/users").Subrouter()
+	protected.Use(utils.JwtMiddleware)
+
+	//GET METHODS
+	protected.HandleFunc("/myProfile", controller.MyProfile)
+
+	//PUT METHODS
+
+	//PUBLIC METHODS
 	//GET METHODS
 	router.HandleFunc("/users/all", controller.GetAll).Methods("GET")
 	router.HandleFunc("/users/{id}", controller.GetById).Methods("GET")
@@ -51,6 +62,7 @@ func main() {
 	//POST METHODS
 	router.HandleFunc("/users/add", controller.Save).Methods("POST")
 	router.HandleFunc("/users/login", controller.LogIn).Methods("POST")
+
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
