@@ -1,0 +1,30 @@
+services:
+  auth_service:
+    build:
+      context: ./auth/
+      dockerfile: Dockerfile
+    image: auth_service
+    container_name: auth_service
+    restart: always
+    networks:
+      - service
+    ports:
+      - 8080:8080
+    depends_on:
+      - database
+
+  database:
+    image: postgres
+    restart: always
+    networks:
+        - service
+    ports:
+      - 9000:5432
+    environment:
+        POSTGRES_PASSWORD: mypassword
+
+
+networks:
+  service:
+    name: service
+    driver: bridge
