@@ -9,14 +9,15 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 //TODO: make this be an enviroment variable
 var key = []byte("my_super_secret_key_for_hmac_veoma_tajno_ne_pokazuj_nikome")
 
-func GenerateToken(username string) (string, error){
+func GenerateToken(id uuid.UUID) (string, error){
 	claims := jwt.MapClaims{
-		"username": username,
+		"id": id,
 		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	}
 

@@ -50,9 +50,10 @@ func main() {
 	protected.Use(utils.JwtMiddleware)
 
 	//GET METHODS
-	protected.HandleFunc("/myProfile", controller.MyProfile)
+	protected.HandleFunc("/myProfile", controller.MyProfile).Methods("GET")
 
 	//PUT METHODS
+	protected.HandleFunc("/myProfile", controller.UpdateProfile).Methods("PUT")
 
 	//PUBLIC METHODS
 	//GET METHODS

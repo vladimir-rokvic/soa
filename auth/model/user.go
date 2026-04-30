@@ -22,6 +22,16 @@ func (ur UserRole) String() string {
 	return userRoleNames[ur]
 }
 
+var namesUserRole = map[string] UserRole {
+	"admin": Admin,
+	"vodic": Vodic,
+	"turista": Turista,
+}
+
+func StringToUserRole(role string) UserRole {
+	return namesUserRole[role]
+}
+
 type User struct {
 	ID uuid.UUID `json:"id"`
 	Username string `json:"username" gorm:"unique"`
