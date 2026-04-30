@@ -23,6 +23,17 @@ services:
     environment:
         POSTGRES_PASSWORD: mypassword
 
+  gateway:
+    build:
+      context: ./api_gateway/
+      dockerfile: Dockerfile
+    image: api_gateway
+    container_name: api_gateway
+    restart: always
+    networks:
+        - service
+    ports:
+      - 8000:8000
 
 networks:
   service:
