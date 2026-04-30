@@ -33,7 +33,7 @@ func (user_repo *UserRepo) Save(user *model.User) error {
 		return err
 	}
 
-	result := user_repo.Db.Create(user)
+	result := user_repo.Db.Save(user)
 	return result.Error
 }
 
