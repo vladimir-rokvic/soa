@@ -22,6 +22,8 @@ services:
       - 9000:5432
     environment:
         POSTGRES_PASSWORD: mypassword
+    volumes:
+      - db:/var/lib/postgresql/data
 
   gateway:
     build:
@@ -35,7 +37,24 @@ services:
     ports:
       - 8000:8000
 
+  blog_service:
+    build:
+      context: ./blog/
+      dockerfile: Dockerfile
+    image: blog_service
+    container_name: blog_service
+    restart: always
+    networks:
+        - service
+    ports:
+      - 8081:8080
+    depends_on:
+      - database
+
 networks:
   service:
     name: service
     driver: bridge
+
+volumes:
+  db:
