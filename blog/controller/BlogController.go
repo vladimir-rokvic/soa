@@ -6,7 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 type BlogController struct {
@@ -49,11 +50,17 @@ func (controller *BlogController) Save(writer http.ResponseWriter, req *http.Req
 func (controller *BlogController) GetById(writer http.ResponseWriter, req *http.Request) {
 	writer.Header().Set("Content-Type", "application/json")
 
-	uuid := strings.TrimPrefix(req.URL.Path, "/blog/")
-	blog, err := controller.Service.GetById(uuid)
+	vars := mux.Vars(req)
+	uuid, ok := vars["id"]
+	if !ok {
+		fmt.Println("Error getting id from vars")
+		writer.WriteHeader(http.StatusNotFound)
+		return
+	}
 
+	blog, err := controller.Service.GetById(uuid)
 	if err != nil {
-		fmt.Println("Error fetching blog by id")
+		fmt.Printf("Error fetching blog by id: %s\n", uuid)
 		fmt.Println(err)
 		writer.WriteHeader(http.StatusNotFound)
 		return
