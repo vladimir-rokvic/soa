@@ -74,6 +74,17 @@ func (user_service *UserService) Save(user *model.User) error {
 	return err
 }
 
+func (user_service *UserService) GetByEmail(email string) *model.User {
+	user, err := user_service.UserRepo.GetByEmail(email)
+	if err != nil {
+		fmt.Printf("Error getting user with username: %s ", email)
+		fmt.Println(err)
+		return nil
+	}
+
+	return &user
+}
+
 func (user_service *UserService) UpdateUser(user *model.User, dto *dto.UserUpdateDTO) error {
 	user.Username = dto.Username
 	user.Email = dto.Email

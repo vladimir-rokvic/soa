@@ -82,8 +82,11 @@ req *http.Request){
 
 	user := user_controller.UserService.GetByUsername(loginDto.Username)
 	if user == nil {
-		writer.WriteHeader(http.StatusUnauthorized)
-		return
+		user = user_controller.UserService.GetByEmail(loginDto.Username)
+		if user == nil{
+			writer.WriteHeader(http.StatusUnauthorized)
+			return
+		}
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginDto.Password))
