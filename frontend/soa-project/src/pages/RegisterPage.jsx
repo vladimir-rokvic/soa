@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './Page.css'
 import api from '../config/axios';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
 	const [username, setUsername] = useState('');
@@ -8,6 +9,8 @@ const RegisterPage = () => {
 	const [confirmPassword, setConfirmPassword] = useState('');
 	const [email, setEmail] = useState('');
 	const [category, setCategory] = useState("");
+
+	naviagte = useNavigate();
 
 	const handleRegister = async () => {
 		if(password !== confirmPassword) return;
@@ -23,6 +26,7 @@ const RegisterPage = () => {
 		try {
 			const res = await api.post('/users/add', body);
 			console.log(res.data);
+			navigate('/');
 		} catch (err) {
 			console.log(err);
 		};
