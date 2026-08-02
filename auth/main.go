@@ -26,6 +26,8 @@ func init_db() *gorm.DB {
 		fmt.Println("Error connecting to database: ")
 		fmt.Println(err)
 		return nil
+	} else {
+		fmt.Println("Succsessfully connected to the database!")
 	}
 
 	db.AutoMigrate(model.User{})

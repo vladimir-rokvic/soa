@@ -1,0 +1,122 @@
+.register-form {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid black;
+	padding: 20px;
+	margin: 10px auto;
+	width: 600px;
+	background-color: #D8DBE2;
+}
+
+.register-form input:focus {
+	background-color: #A9BCD0;
+}
+
+.register-form button {
+	background-color: #373F51;
+	border: 1px solid #D8DBE2;
+	border-radius: 12px;
+	color: white;
+}
+
+.register-form label {
+	margin: 10px auto;
+}
+
+.register-form input {
+	width: 300px;
+	height: 25px;
+	margin: 0 auto;
+}
+
+.select-box {
+	width: 310px;
+	height: 25px;
+	margin: 0 auto;
+}
+
+.error-msg {
+	color: red;
+}
+
+.loginForm {
+	padding: 300px;
+	display: flex;
+	flex-direction: column;
+}
+
+.loginForm label {
+	margin: 0px auto;
+}
+
+.idk label {
+	margin: 10px auto;
+}
+
+.idk p {
+	margin: 0 auto;
+}
+
+.idk {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid black;
+	padding: 20px;
+	margin: 10px auto;
+	width: 600px;
+	background-color: #D8DBE2;
+}
+
+.idk input:focus {
+	background-color: #A9BCD0;
+}
+
+.idk button {
+	background-color: #373F51;
+	border: 1px solid #D8DBE2;
+	border-radius: 12px;
+	color: white;
+}
+
+.profile-page {
+	justify-content: space-between;
+	display: flex;
+}
+
+.profile-page button {
+	height: 35px;
+	border-radius: 20px;
+	width: 75px;
+	font-size: 18px;
+	padding: 5px;
+	background-color: #0082ff;
+	color: white;
+	border-color: #0003ff;
+}
+
+.profile-page button:hover {
+	background-color: #0003ff;
+}
+
+.user-info {
+	padding: 10px;
+}
+
+.user-info-edit {
+	display: flex;
+	flex-direction: column;
+}
+
+.user-info-edit input {
+	margin-top: 10px;
+	border-radius: 10px;
+	font-size: 24px;
+	margin-left: 10px;
+}
+
+.user-info-edit select {
+	margin-top: 10px;
+	border-radius: 10px;
+	font-size: 24px;
+	height: 30px;
+}

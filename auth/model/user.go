@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 )
 
+//enum valjda
 type UserRole int
 const (
 	Admin UserRole = iota
