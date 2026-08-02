@@ -21,14 +21,14 @@ func (service *BlogService) GetById(uuid string) (model.Blog, error) {
 	return blog, err
 }
 
-func (service *BlogService) Save(blogDto dto.BlogDTO) error {
+func (service *BlogService) Save(blogDto dto.BlogDTO) (model.Blog, error) {
 	var blog = model.Blog{
 		AuthorID: blogDto.AuthorID,
 		Title: blogDto.Title,
 		Description: blogDto.Description,
 	}
-	err := service.Repository.Save(blog)
-	return err
+	blog, err := service.Repository.Save(blog)
+	return blog, err
 }
 
 func (service *BlogService) Update(blogDto dto.BlogDTO) error {
@@ -49,14 +49,24 @@ func (service *BlogService) Update(blogDto dto.BlogDTO) error {
 	return err
 }
 
-func (service *BlogService) Delete(uuid string) error {
+func (service *BlogService) Delete(uuid string) (model.Blog, error) {
 	blog, err := service.GetById(uuid)
 	if err != nil {
 		fmt.Printf("Blog by uuid: %s, not found", uuid)
-		return err
+		return blog, err
 	}
 
 	err = service.Repository.Delete(blog)
 
-	return err
+	return blog, err
+}
+
+func (service *BlogService) GetBlogsByAuthor(uuid string) ([]model.Blog, error) {
+	blogs, err := service.Repository.GetBlogsByAuthor(uuid)
+	if err != nil {
+		fmt.Printf("Error getting blogs by author: %s\n", uuid)
+		return nil, err
+	}
+
+	return blogs, err
 }

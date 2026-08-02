@@ -88,7 +88,6 @@ func (user_service *UserService) GetByEmail(email string) *model.User {
 func (user_service *UserService) UpdateUser(user *model.User, dto *dto.UserUpdateDTO) error {
 	user.Username = dto.Username
 	user.Email = dto.Email
-	user.Password = dto.Password
 	user.UserRole = model.StringToUserRole(dto.UserRole)
 
 	err := user_service.Save(user)

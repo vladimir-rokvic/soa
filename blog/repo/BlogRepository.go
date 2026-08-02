@@ -24,9 +24,9 @@ func (repo *BlogRepo) GetById(uuid string) (model.Blog, error) {
 	return blog, result.Error
 }
 
-func (repo *BlogRepo) Save(blog model.Blog) error {
+func (repo *BlogRepo) Save(blog model.Blog) (model.Blog, error) {
 	result := repo.Db.Create(&blog)
-	return result.Error
+	return blog, result.Error
 }
 
 func (repo *BlogRepo) Update(blog model.Blog) error {
@@ -37,4 +37,11 @@ func (repo *BlogRepo) Update(blog model.Blog) error {
 func (repo *BlogRepo) Delete(blog model.Blog) error {
 	result := repo.Db.Delete(&blog)
 	return result.Error
+}
+
+func (repo *BlogRepo) GetBlogsByAuthor(uuid string) ([]model.Blog, error) {
+	var blogs []model.Blog
+	result := repo.Db.Find(&blogs, "author_id = ?", uuid);
+
+	return blogs, result.Error
 }

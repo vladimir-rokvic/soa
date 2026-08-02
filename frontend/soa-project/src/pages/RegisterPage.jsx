@@ -8,9 +8,9 @@ const RegisterPage = () => {
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
 	const [email, setEmail] = useState('');
-	const [category, setCategory] = useState("");
+	const [category, setCategory] = useState('');
 
-	naviagte = useNavigate();
+	const navigate = useNavigate();
 
 	const handleRegister = async () => {
 		if(password !== confirmPassword) return;

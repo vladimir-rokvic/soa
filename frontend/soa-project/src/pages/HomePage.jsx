@@ -1,4 +1,6 @@
+import PageHeader from "../components/PageHeader";
 import { useAuth } from "../context/AuthContext";
+import './Page.css';
 
 const HomePage = () => {
 	const {logout} = useAuth();
@@ -6,10 +8,9 @@ const HomePage = () => {
 		logout();
 	}
 	return(
-		<>
-			<h1>Home page</h1>
-			<button onClick={handleLogout}>Log out</button>
-		</>
+		<div>
+			<PageHeader />
+		</div>
 	);
 }
 

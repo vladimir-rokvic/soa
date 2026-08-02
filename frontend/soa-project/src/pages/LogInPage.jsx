@@ -20,7 +20,7 @@ const LogInPage = () => {
 		try {
 			const res = await api.post('/users/login', body);
 			console.log(res.data);
-			const user = {username: username, token: res.data.token};
+			const user = {id: res.data.id, username: username, token: res.data.token};
 			login(user);
 			navigate('/');
 		} catch (err) {

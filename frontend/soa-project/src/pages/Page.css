@@ -77,3 +77,46 @@
 	border-radius: 12px;
 	color: white;
 }
+
+.profile-page {
+	justify-content: space-between;
+	display: flex;
+}
+
+.profile-page button {
+	height: 35px;
+	border-radius: 20px;
+	width: 75px;
+	font-size: 18px;
+	padding: 5px;
+	background-color: #0082ff;
+	color: white;
+	border-color: #0003ff;
+}
+
+.profile-page button:hover {
+	background-color: #0003ff;
+}
+
+.user-info {
+	padding: 10px;
+}
+
+.user-info-edit {
+	display: flex;
+	flex-direction: column;
+}
+
+.user-info-edit input {
+	margin-top: 10px;
+	border-radius: 10px;
+	font-size: 24px;
+	margin-left: 10px;
+}
+
+.user-info-edit select {
+	margin-top: 10px;
+	border-radius: 10px;
+	font-size: 24px;
+	height: 30px;
+}

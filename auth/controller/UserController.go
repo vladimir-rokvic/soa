@@ -105,8 +105,15 @@ req *http.Request){
 		return
 	}
 
+	loggedIn := dto.LoginUserDTO{
+		ID: user.ID,
+		Username: user.Username,
+		Email: user.Email,
+		Role: user.UserRole.String(),
+		Token: token}
+
 	writer.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(writer).Encode(map[string]string{"token": token})
+	json.NewEncoder(writer).Encode(loggedIn)
 }
 
 func (user_controller *UserController) MyProfile(writer http.ResponseWriter,
