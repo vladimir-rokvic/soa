@@ -46,8 +46,10 @@ func main() {
 
 	router.HandleFunc("/", controller.GetAll).Methods("GET")
 	router.HandleFunc("/", controller.Save).Methods("POST")
-	router.HandleFunc("/{id}", controller.GetById).Methods("GET")
 	router.HandleFunc("/", controller.UpdateBlog).Methods("PUT")
+	router.HandleFunc("/{id}", controller.GetById).Methods("GET")
+	router.HandleFunc("/{id}", controller.Delete).Methods("DELETE")
+	router.HandleFunc("/user/{id}", controller.GetBlogsByAuthor).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

@@ -43,3 +43,10 @@ func (user_repo *UserRepo) GetByUsername(username string) (model.User, error) {
 
 	return user, result.Error
 }
+
+func (user_repo *UserRepo) GetByEmail(email string) (model.User, error) {
+	var user model.User
+	result := user_repo.Db.First(&user, "email = ?", email)
+
+	return user, result.Error
+}

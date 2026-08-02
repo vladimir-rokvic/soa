@@ -15,8 +15,6 @@ type BlogController struct {
 }
 
 func (controller *BlogController) GetAll(writer http.ResponseWriter, req *http.Request) {
-	writer.Header().Set("Content-Type", "application/json")
-
 	blogs, err := controller.Service.GetAll()
 	if err != nil {
 		fmt.Println("Error fetching all blogs")
@@ -25,17 +23,17 @@ func (controller *BlogController) GetAll(writer http.ResponseWriter, req *http.R
 		return
 	}
 
+	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(blogs)
 }
 
 func (controller *BlogController) Save(writer http.ResponseWriter, req *http.Request) {
-	writer.Header().Set("Content-Type", "application/json")
 	var blogDto dto.BlogDTO
 
 	json.NewDecoder(req.Body).Decode(&blogDto)
 
-	err := controller.Service.Save(blogDto)
+	blog, err := controller.Service.Save(blogDto)
 	if err != nil {
 		fmt.Println("Error saving blog")
 		fmt.Println(err)
@@ -43,13 +41,12 @@ func (controller *BlogController) Save(writer http.ResponseWriter, req *http.Req
 		return
 	}
 
+	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)
-	json.NewEncoder(writer).Encode(&blogDto)
+	json.NewEncoder(writer).Encode(&blog)
 }
 
 func (controller *BlogController) GetById(writer http.ResponseWriter, req *http.Request) {
-	writer.Header().Set("Content-Type", "application/json")
-
 	vars := mux.Vars(req)
 	uuid, ok := vars["id"]
 	if !ok {
@@ -66,13 +63,12 @@ func (controller *BlogController) GetById(writer http.ResponseWriter, req *http.
 		return
 	}
 
+	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(blog)
 }
 
 func (controller *BlogController) UpdateBlog(writer http.ResponseWriter, req *http.Request) {
-	writer.Header().Set("Content-Type", "application/json")
-
 	var blog dto.BlogDTO
 	json.NewDecoder(req.Body).Decode(&blog)
 	err := controller.Service.Update(blog)
@@ -84,6 +80,45 @@ func (controller *BlogController) UpdateBlog(writer http.ResponseWriter, req *ht
 		return
 	}
 
+	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(writer).Encode(blog)
+}
+
+func (controller *BlogController) GetBlogsByAuthor(writer http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	auth_id, ok := vars["id"]
+	if !ok {
+		fmt.Printf("Error getting vars for author id: %s\n", auth_id);
+		writer.WriteHeader(http.StatusBadRequest)
+		return;
+	}
+
+	blogs, err := controller.Service.GetBlogsByAuthor(auth_id);
+
+	if err != nil {
+		fmt.Printf("Error getting blogs by auth: %s\n", auth_id)
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	writer.Header().Set("Content-type", "application/json")
+	json.NewEncoder(writer).Encode(blogs)
+}
+
+func (controller *BlogController) Delete(writer http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	id := vars["id"]
+
+	blog, err := controller.Service.Delete(id)
+	if err != nil {
+		fmt.Println("Error deleting blog")
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusNotFound)
+	}
+
+	writer.WriteHeader(http.StatusOK)
+	writer.Header().Set("Content-type", "application/json")
 	json.NewEncoder(writer).Encode(blog)
 }
