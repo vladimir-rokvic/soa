@@ -78,6 +78,20 @@ services:
     depends_on:
       - database
 
+  tours-service:
+    build:
+      context: tours-service
+      dockerfile: Dockerfile
+    image: tours-service
+    container_name: tours-service
+    restart: always
+    networks:
+      - service
+    depends_on:
+      - database
+    ports:
+      - 8084:8080
+
 networks:
   service:
     name: service
