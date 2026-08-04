@@ -122,3 +122,27 @@ func (controller *BlogController) Delete(writer http.ResponseWriter, req *http.R
 	writer.Header().Set("Content-type", "application/json")
 	json.NewEncoder(writer).Encode(blog)
 }
+
+func (controller *BlogController) GetBlogsForUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+
+	if !ok {
+		fmt.Println("Error getting id from vars")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	blogs, err := controller.Service.GetBlogsForUser(id)
+
+	if err != nil {
+		fmt.Println("Error getting blogs for user")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(blogs)
+}
