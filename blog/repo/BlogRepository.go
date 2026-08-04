@@ -12,14 +12,14 @@ type BlogRepo struct {
 
 func (repo *BlogRepo) GetAll() ([]model.Blog, error) {
 	var blogs []model.Blog
-	result := repo.Db.Find(&blogs)
+	result := repo.Db.Preload("Comments").Find(&blogs)
 
 	return blogs, result.Error
 }
 
 func (repo *BlogRepo) GetById(uuid string) (model.Blog, error) {
 	var blog model.Blog
-	result := repo.Db.Find(&blog, "id = ?", uuid)
+	result := repo.Db.Preload("Comments").Find(&blog, "id = ?", uuid)
 
 	return blog, result.Error
 }
@@ -41,7 +41,7 @@ func (repo *BlogRepo) Delete(blog model.Blog) error {
 
 func (repo *BlogRepo) GetBlogsByAuthor(uuid string) ([]model.Blog, error) {
 	var blogs []model.Blog
-	result := repo.Db.Find(&blogs, "author_id = ?", uuid);
+	result := repo.Db.Preload("Comments").Find(&blogs, "author_id = ?", uuid);
 
 	return blogs, result.Error
 }

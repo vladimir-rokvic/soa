@@ -28,6 +28,7 @@ func init_db() *gorm.DB {
 	}
 
 	db.AutoMigrate(model.Blog{})
+	db.AutoMigrate(model.Comment{})
 
 	return db
 }
@@ -38,18 +39,30 @@ func main() {
 		return
 	}
 
-	router := mux.NewRouter().PathPrefix("/blog").Subrouter()
+	router := mux.NewRouter()
+	blog_router := router.PathPrefix("/blog").Subrouter()
+	comment_router := router.PathPrefix("/blog/comment").Subrouter()
 
-	repo := repo.BlogRepo{Db: db}
-	service := service.BlogService{Repository: &repo}
-	controller := controller.BlogController{Service: &service}
+	blog_repo := repo.BlogRepo{Db: db}
+	blog_service := service.BlogService{Repository: &blog_repo}
+	blog_controller := controller.BlogController{Service: &blog_service}
 
-	router.HandleFunc("/", controller.GetAll).Methods("GET")
-	router.HandleFunc("/", controller.Save).Methods("POST")
-	router.HandleFunc("/", controller.UpdateBlog).Methods("PUT")
-	router.HandleFunc("/{id}", controller.GetById).Methods("GET")
-	router.HandleFunc("/{id}", controller.Delete).Methods("DELETE")
-	router.HandleFunc("/user/{id}", controller.GetBlogsByAuthor).Methods("GET")
+	comment_repo := repo.CommentRepo{Db: db}
+	comment_service := service.CommentService{Repository: &comment_repo}
+	comment_controller := controller.CommentController{Service: &comment_service}
+
+	blog_router.HandleFunc("/", blog_controller.GetAll).Methods("GET")
+	blog_router.HandleFunc("/", blog_controller.Save).Methods("POST")
+	blog_router.HandleFunc("/", blog_controller.UpdateBlog).Methods("PUT")
+	blog_router.HandleFunc("/{id}", blog_controller.GetById).Methods("GET")
+	blog_router.HandleFunc("/{id}", blog_controller.Delete).Methods("DELETE")
+	blog_router.HandleFunc("/user/{id}", blog_controller.GetBlogsByAuthor).Methods("GET")
+
+	comment_router.HandleFunc("/", comment_controller.GetAll).Methods("GET")
+	comment_router.HandleFunc("/", comment_controller.Save).Methods("POST")
+	comment_router.HandleFunc("/", comment_controller.Update).Methods("PUT")
+	comment_router.HandleFunc("/{id}", comment_controller.GetById).Methods("GET")
+	comment_router.HandleFunc("/{id}", comment_controller.Delete).Methods("DELETE")
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

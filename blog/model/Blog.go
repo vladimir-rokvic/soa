@@ -13,6 +13,7 @@ type Blog struct {
 	Title string `json:"title"`
 	Description string `json:"description"`
 	CreatedAt time.Time `json:"date_created"`
+	Comments []Comment `json:"comments"`
 }
 
 func (blog *Blog) BeforeCreate(scope *gorm.DB) error {
