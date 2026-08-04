@@ -34,19 +34,19 @@ services:
       - 7687:7687
       - 7474:7474
     environment:
-      - NEO4J_AUTH=neo4j/neo4j
+      - NEO4J_AUTH=neo4j/password
     volumes: 
       - db:/data
 
   follower-service:
     build:
-      context: ./
+      context: ./follower-service
       dockerfile: Dockerfile
     image: follower-service
     container_name: follower-service
     restart: always
     networks:
-        - service
+      - service
     ports:
       - 8083:8080
     depends_on:
