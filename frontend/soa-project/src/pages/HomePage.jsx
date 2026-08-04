@@ -40,15 +40,15 @@ const HomePage = () => {
 			<PageHeader />
 			<div className="homepage-content">
 				<div className="blog-content">
-					{blogs.map(b => (
-						<ShowBlogCard title={b.title} description={b.description}/>
+					{blogs.length !== 0 && blogs.map((b) => (
+						<ShowBlogCard key={b.id} blog={b}/>
 					))}
 				</div>
 				<div className="recommended-users">
 					<div style={{height: '50px', display: 'flex'}}>
 						<h2 style={{margin: '0 auto'}}>Recommended</h2>
 					</div>
-					{recommended.map(r => (
+					{recommended.length !== 0 && recommended.map(r => (
 						<RecommendedProfileCard recommendedUser={r} key={r.id} />
 					))}
 				</div>
