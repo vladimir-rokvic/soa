@@ -26,4 +26,22 @@ public interface UserRepository extends Neo4jRepository<User, String> {
            """
     )
     boolean isFollowing(@Param("clientId") String clientId, @Param("userId") String userId);
+
+   @Query("""
+        MATCH (me:User {id: $userId})-[:FOLLOWS]->(:User)-[:FOLLOWS]->(suggestion:User)
+        WHERE NOT (me)-[:FOLLOWS]->(suggestion) AND suggestion.id <> $userId
+        RETURN suggestion, count(*) as m
+        ORDER BY m DESC
+        LIMIT 10
+    """)
+    List<User> findRecommendations(@Param("userId") String userId);
+
+    @Query("""
+           MATCH (u:User)<-[:FOLLOWS]-(follower)
+           WHERE u.id <> $userId AND NOT (:User {id: $userId})-[:FOLLOWS]->(u)
+           RETURN u, count(follower) as m
+           ORDER BY m DESC
+           LIMIT 10
+    """)
+    List<User> findRecommendationsByCount(@Param("userId") String userId);
 }

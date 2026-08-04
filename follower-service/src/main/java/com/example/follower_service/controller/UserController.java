@@ -1,6 +1,7 @@
 package com.example.follower_service.controller;
 
 import com.example.follower_service.dto.FollowDTO;
+import com.example.follower_service.dto.UserDTO;
 import com.example.follower_service.model.User;
 import com.example.follower_service.service.UserService;
 import org.neo4j.cypherdsl.core.Use;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -20,7 +22,12 @@ public class UserController {
     //sve one koje korisnik prati
     @GetMapping("{id}/follows")
     public ResponseEntity<?> getAllThatFollows(@PathVariable("id") String id) {
-        List<User> ret = userService.getAllThatFollows(id);
+        List<User> users = userService.getAllThatFollows(id);
+        List<UserDTO> ret = new ArrayList<>();
+
+        for(User u: users) {
+            ret.add(new UserDTO(u));
+        }
 
         return ResponseEntity.ok(ret);
     }
@@ -47,6 +54,18 @@ public class UserController {
         User ret = userService.followUser(dto);
 
         if(ret == null) return ResponseEntity.badRequest().build();
+
+        return ResponseEntity.ok(new UserDTO(ret));
+    }
+
+    @GetMapping("{id}/recommendations")
+    public ResponseEntity<?> getRecommendations(@PathVariable("id") String id) {
+        List<User> users = userService.getRecommendations(id);
+        List<UserDTO> ret = new ArrayList<>();
+
+        for(User u: users) {
+            ret.add(new UserDTO(u));
+        }
 
         return ResponseEntity.ok(ret);
     }

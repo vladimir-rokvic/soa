@@ -120,3 +120,27 @@
 	font-size: 24px;
 	height: 30px;
 }
+
+.homepage-content {
+	display: flex;
+	justify-content: space-between;
+}
+
+.recommended-users {
+	border: 1px solid #000;
+	padding: 10px;
+	margin: 5px;
+	width: 25%;
+	display: flex;
+	flex-direction: column;
+	height: 720px;
+}
+
+.blog-content {
+	margin-top: 5px;
+	margin-left: 5px;
+	margin-bottom: 5px;
+	width: 100%;
+	border: 1px solid black;
+	padding: 10px;
+}

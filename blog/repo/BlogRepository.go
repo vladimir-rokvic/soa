@@ -45,3 +45,10 @@ func (repo *BlogRepo) GetBlogsByAuthor(uuid string) ([]model.Blog, error) {
 
 	return blogs, result.Error
 }
+
+func (repo *BlogRepo) GetBlogsByAuthors(ids []string) ([]model.Blog, error) {
+	var blogs []model.Blog
+	result := repo.Db.Where("author_id IN (?)", ids).Preload("Comments").Find(&blogs)
+
+	return blogs, result.Error
+}

@@ -4,7 +4,9 @@ import (
 	"blog_service/dto"
 	"blog_service/model"
 	"blog_service/repo"
+	"encoding/json"
 	"fmt"
+	"net/http"
 )
 
 type BlogService struct {
@@ -67,6 +69,37 @@ func (service *BlogService) GetBlogsByAuthor(uuid string) ([]model.Blog, error) 
 		fmt.Printf("Error getting blogs by author: %s\n", uuid)
 		return nil, err
 	}
+
+	return blogs, err
+}
+
+func extractIds(users []dto.UserDTO) []string {
+	ids := make([]string, 0, len(users))
+
+	for _, u := range users {
+		ids = append(ids, u.ID)
+	}
+
+	return ids
+}
+
+func (service *BlogService) GetBlogsForUser(id string) ([]model.Blog, error) {
+	res, err := http.Get(
+		"http://follower-service:8080/followers/users/" + id + "/follows")
+
+	if err != nil {
+		return nil, err
+	}
+
+	var users []dto.UserDTO
+	err = json.NewDecoder(res.Body).Decode(&users)
+
+	if err != nil {
+		return nil, err
+	}
+
+	ids := extractIds(users)
+	blogs, err := service.Repository.GetBlogsByAuthors(ids)
 
 	return blogs, err
 }

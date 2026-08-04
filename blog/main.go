@@ -57,6 +57,7 @@ func main() {
 	blog_router.HandleFunc("/{id}", blog_controller.GetById).Methods("GET")
 	blog_router.HandleFunc("/{id}", blog_controller.Delete).Methods("DELETE")
 	blog_router.HandleFunc("/user/{id}", blog_controller.GetBlogsByAuthor).Methods("GET")
+	blog_router.HandleFunc("/forUser/{id}", blog_controller.GetBlogsForUser).Methods("GET")
 
 	comment_router.HandleFunc("/", comment_controller.GetAll).Methods("GET")
 	comment_router.HandleFunc("/", comment_controller.Save).Methods("POST")

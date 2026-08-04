@@ -36,4 +36,13 @@ public class UserService {
     public boolean doesHeFollow(String clientId, String userId) {
         return userRepository.isFollowing(clientId, userId);
     }
+
+    public List<User> getRecommendations(String userId) {
+        List<User> users = userRepository.findRecommendations(userId);
+        if(users.isEmpty()) {
+            users = userRepository.findRecommendationsByCount(userId);
+        }
+
+        return users;
+    }
 }
