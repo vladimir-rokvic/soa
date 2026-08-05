@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import RegisterPage from "./pages/RegisterPage";
 import BlogPage from "./pages/BlogPage";
 import MyProfilePage from "./pages/MyProfilePage";
+import ToursPage from "./pages/ToursPage";
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -15,6 +16,7 @@ function AppRoutes() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/blog" element={<BlogPage />} />
       <Route path="/profile" element={<MyProfilePage />} />
+      <Route path="/tours" element={<ToursPage />} />
     </Routes>
   );
 }

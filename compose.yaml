@@ -1,4 +1,52 @@
 services:
+  database:
+    image: postgres
+    restart: always
+    networks:
+      - service
+    ports:
+      - 9000:5432
+    environment:
+        POSTGRES_PASSWORD: mypassword
+    volumes:
+      - db:/var/lib/postgresql
+
+  neo4j:
+    image: neo4j
+    restart: always
+    networks:
+      - service
+    ports:
+      - 7687:7687
+      - 7474:7474
+    environment:
+      - NEO4J_AUTH=neo4j/password
+    volumes: 
+      - db:/data
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    restart: always
+    networks:
+      - service
+    ports:
+      - 27017:27017
+    volumes:
+      - db:/data/db
+
+  gateway:
+    build:
+      context: ./api_gateway/
+      dockerfile: Dockerfile
+    image: api_gateway
+    container_name: api_gateway
+    restart: always
+    networks:
+      - service
+    ports:
+      - 8000:8000
+
   auth_service:
     build:
       context: ./auth/
@@ -13,31 +61,6 @@ services:
     depends_on:
       - database
 
-  database:
-    image: postgres
-    restart: always
-    networks:
-        - service
-    ports:
-      - 9000:5432
-    environment:
-        POSTGRES_PASSWORD: mypassword
-    volumes:
-      - db:/var/lib/postgresql
-
-  neo4j:
-    image: neo4j
-    restart: always
-    networks:
-        - service
-    ports:
-      - 7687:7687
-      - 7474:7474
-    environment:
-      - NEO4J_AUTH=neo4j/password
-    volumes: 
-      - db:/data
-
   follower-service:
     build:
       context: ./follower-service
@@ -51,18 +74,6 @@ services:
       - 8083:8080
     depends_on:
       - neo4j
-
-  gateway:
-    build:
-      context: ./api_gateway/
-      dockerfile: Dockerfile
-    image: api_gateway
-    container_name: api_gateway
-    restart: always
-    networks:
-        - service
-    ports:
-      - 8000:8000
 
   blog_service:
     build:
@@ -88,7 +99,7 @@ services:
     networks:
       - service
     depends_on:
-      - database
+      - mongodb
     ports:
       - 8084:8080
 

@@ -1,29 +1,44 @@
-from sqlmodel import SQLModel, Field, Relationship
-from enum import IntEnum
-import uuid
+from pydantic import BaseModel
+from enum import Enum
 from tag import Tag
-from tour_tag_link import TourTagLink
 
 
-class Difficulty(IntEnum):
-    EASY = 0
-    MEDIUM = 1
-    HARD = 2
+class Difficulty(str, Enum):
+    EASY = "Easy"
+    MEDIUM = "Medium"
+    HARD = "Hard"
 
 
-class Status(IntEnum):
-    DRAFT = 0
-    PUBLISHED = 1
-    ARCHIVED = 2
+class Status(str, Enum):
+    DRAFT = "Draft"
+    PUBLISHED = "Published"
+    ARCHIVED = "Archived"
 
 
-class Tour(SQLModel, table=True):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+class Tour(BaseModel):
     title: str
     description: str
-    authorId: uuid.UUID
-    cost: float
     difficulty: Difficulty
-    tags: list[Tag] = Relationship(back_populates="tours",
-                                   link_model=TourTagLink)
+    tags: list[str]
     status: Status
+    price: float
+    author_id: str
+
+
+class CreateTour(BaseModel):
+    title: str
+    description: str
+    difficulty: Difficulty
+    tags: list[str]
+    author_id: str
+
+
+class TourResponse(BaseModel):
+    id: str
+    title: str
+    description: str
+    difficulty: Difficulty
+    tags: list[str]
+    status: Status
+    price: float
+    author_id: str
