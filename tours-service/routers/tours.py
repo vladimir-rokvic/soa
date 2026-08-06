@@ -36,6 +36,8 @@ def get_all():
 def get_by_author_id(user_id: str):
     results = tours_collection.find({"author_id": user_id})
 
+    print("ovo radi")
+
     return [
         to_response(result) for result in results
     ]

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from enum import Enum
-from tag import Tag
+#from tag import Tag
 
 
 class Difficulty(str, Enum):

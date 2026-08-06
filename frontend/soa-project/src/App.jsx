@@ -7,6 +7,7 @@ import RegisterPage from "./pages/RegisterPage";
 import BlogPage from "./pages/BlogPage";
 import MyProfilePage from "./pages/MyProfilePage";
 import ToursPage from "./pages/ToursPage";
+import AddTourPage from "./pages/AddTourPage";
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -17,6 +18,7 @@ function AppRoutes() {
       <Route path="/blog" element={<BlogPage />} />
       <Route path="/profile" element={<MyProfilePage />} />
       <Route path="/tours" element={<ToursPage />} />
+      <Route path="/tours/add" element={<AddTourPage />} />
     </Routes>
   );
 }
