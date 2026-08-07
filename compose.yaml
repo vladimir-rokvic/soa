@@ -102,6 +102,8 @@ services:
       - mongodb
     ports:
       - 8084:8080
+    volumes:
+      - tours_db:/src/uploads
 
 networks:
   service:
@@ -110,3 +112,4 @@ networks:
 
 volumes:
   db:
+  tours_db: 

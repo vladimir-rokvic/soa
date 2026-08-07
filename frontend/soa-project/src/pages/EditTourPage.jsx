@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import PageHeader from '../components/PageHeader'
 import api from '../config/axios';
 import './Page.css'
-import { useAuth } from '../context/AuthContext';
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMapEvents }
 from 'react-leaflet';
-import { useNavigate } from 'react-router-dom';
 
 const MapClickHandler = ({start, end, setStart, setEnd}) => {
 	useMapEvents({
@@ -19,11 +18,12 @@ const MapClickHandler = ({start, end, setStart, setEnd}) => {
 	});
 };
 
-const PointPopup = ({children, p, setPoint, setPointFile}) => {
-	const [title, setTitle] = useState('');
-	const [description, setDescription] = useState('');
-	const [file, setFile] = useState(null);
+const PointPopup = ({children, p, initialTitle, initialDescription, initialImage, setPoint, setPointFile}) => {
+	const [title, setTitle] = useState(initialTitle || '');
+	const [description, setDescription] = useState(initialDescription || '');
+	const [file, setFile] = useState(initialImage || null);
 	const [rawFile, setRawFile] = useState(null);
+
 	const handleFileChange = (e) => {
 		if(e.target.files) {
 			setFile(URL.createObjectURL(e.target.files[0]));
@@ -84,7 +84,12 @@ const PointPopup = ({children, p, setPoint, setPointFile}) => {
 	);
 };
 
-const AddTourPage = () => {
+const EditTourPage = () => {
+	const {id} = useParams();
+	const navigate = useNavigate();
+
+	const [tour, setTour] = useState(null);
+
 	const [title, setTitle] = useState('');
 	const [description, setDescription] = useState('');
 	const [difficulty, setDifficulty] = useState('');
@@ -92,24 +97,48 @@ const AddTourPage = () => {
 	const [tags, setTags] = useState([]);
 	const [startPoint, setStartPoint] = useState(null);
 	const [endPoint, setEndPoint] = useState(null);
-	const {user} = useAuth();
 
 	const [sp, setSp] = useState(null);
 	const [ep, setEp] = useState(null);
 	const [spFile, setSpFile] = useState(null);
 	const [epFile, setEpFile] = useState(null);
 
-	const navigate = useNavigate();
+	useEffect(() => {
+		const fetchTourData = async () => {
+			try {
+				const res = await api.get(`/tours/${id}`);
+				const data = res.data;
+				setTour(data);
+				console.log(data);
+
+				setTitle(data.title || '');
+				setDescription(data.description || '');
+				setDifficulty(data.difficulty || '');
+				setTags(data.tags || []);
+
+				if (data.start_point) {
+					setStartPoint({lat: data.start_point.lat, lng: data.start_point.lng});
+					setSp(data.start_point);
+				}
+				if (data.end_point) {
+					setEndPoint({lat: data.end_point.lat, lng: data.end_point.lng});
+					setEp(data.end_point);
+				}
+			} catch(err) {
+				console.log(err);
+			};
+		};
+		fetchTourData();
+	}, [id]);
 
 	const handleSave = async () => {
 		const formData = new FormData();
-		
+
 		const body = {
 			title: title,
 			description: description,
 			difficulty: difficulty,
 			tags: tags,
-			author_id: user.id,
 			start_point: sp,
 			end_point: ep
 		};
@@ -120,18 +149,26 @@ const AddTourPage = () => {
 		if (epFile) formData.append('end_point_image', epFile);
 
 		try {
-			const res = await api.post('/tours/', formData);
+			const res = await api.put(`/tours/${id}`, formData);
 			console.log(res.data);
 		} catch(err) {
 			console.log(err);
 		};
-		
+
 		navigate('/tours');
 	};
+
 	const handleAdd = () => {
 		setTags(prev => [...prev, tag]);
 		setTag('');
 	};
+
+	if (!tour) return null;
+
+	const mapCenter = startPoint
+		? [startPoint.lat, startPoint.lng]
+		: [45.2671, 19.8335];
+
 	return(
 		<>
 			<PageHeader />
@@ -170,9 +207,7 @@ const AddTourPage = () => {
 							<button className='btn-save' onClick={handleAdd}>+Add</button>
 							<div className='tags-container'>
 								{tags?.length !== 0 && tags.map((t, i) => (
-									<>
-										<p key={i}>{t}</p>
-									</>
+									<p key={i}>{t}</p>
 								))}
 							</div>
 						</div>
@@ -180,7 +215,7 @@ const AddTourPage = () => {
 
 					<div className='tour-map'>
 						<MapContainer
-							center={[45.2671, 19.8335]}
+							center={mapCenter}
 							zoom={13}
 							style={{width: '100%', height: '100%'}}
 						>
@@ -206,6 +241,11 @@ const AddTourPage = () => {
 								>
 									<PointPopup 
 										p={startPoint}
+										initialTitle={sp?.title}
+										initialDescription={sp?.description}
+										initialImage={sp?.image_path ? 
+										`http://localhost:8084/tours/${sp.image_path}` 
+										: null}
 										setPoint={setSp}
 										setPointFile={setSpFile}
 									>Start point</PointPopup>
@@ -223,6 +263,11 @@ const AddTourPage = () => {
 								>
 									<PointPopup 
 										p={endPoint}
+										initialTitle={ep?.title}
+										initialDescription={ep?.description}
+										initialImage={ep?.image_path ? 
+										`http://localhost:8084/tours/${ep.image_path}` 
+										: null}
 										setPoint={setEp}
 										setPointFile={setEpFile}
 									>End point</PointPopup>
@@ -239,5 +284,4 @@ const AddTourPage = () => {
 	);
 };
 
-
-export default AddTourPage;
+export default EditTourPage;

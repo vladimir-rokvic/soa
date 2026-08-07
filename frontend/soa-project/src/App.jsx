@@ -8,6 +8,7 @@ import BlogPage from "./pages/BlogPage";
 import MyProfilePage from "./pages/MyProfilePage";
 import ToursPage from "./pages/ToursPage";
 import AddTourPage from "./pages/AddTourPage";
+import EditTourPage from "./pages/EditTourPage";
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -19,6 +20,7 @@ function AppRoutes() {
       <Route path="/profile" element={<MyProfilePage />} />
       <Route path="/tours" element={<ToursPage />} />
       <Route path="/tours/add" element={<AddTourPage />} />
+      <Route path="/tours/:id/edit" element={<EditTourPage />} />
     </Routes>
   );
 }
