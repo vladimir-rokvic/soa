@@ -39,6 +39,11 @@ type User struct {
 	Email string `json:"email" gorm:"unique"`
 	Password string `json:"password"`
 	UserRole UserRole `json:"role"`
+	ImagePath string `json:"image_path"`
+	FirstName string `json:"first_name"`
+	LastName string `json:"last_name"`
+	Bio string `json:"bio"`
+	Motto string `json:"motto"`
 }
 
 func (user *User) BeforeCreate(scope *gorm.DB) error {

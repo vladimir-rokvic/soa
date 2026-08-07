@@ -7,7 +7,10 @@ import (
 	"auth_service/utils"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -164,8 +167,53 @@ req *http.Request) {
 	}
 
 	//Ostatak idk kako da nazovem ovaj deo
+	req.ParseMultipartForm(1024 * 250)
+
+	file, h, err := req.FormFile("profile_image")
+	if err == nil {
+		defer file.Close()
+
+		err = os.MkdirAll("./uploads", 0755)
+		if err != nil {
+			fmt.Println("Error making dir uploads")
+			fmt.Println(err)
+			wr.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		ext := filepath.Ext(h.Filename)
+		filename := uuid.New().String() + ext
+		fp := filepath.Join("./uploads", filename)
+
+		d, err := os.Create(fp)
+		if err != nil {
+			fmt.Println("Error creating filepath")
+			fmt.Println(err)
+			wr.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		defer d.Close()
+
+		_, err = io.Copy(d, file)
+		if err != nil {
+			fmt.Println("Error writing file")
+			fmt.Println(err)
+			wr.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		user.ImagePath = fp
+	} else if err != http.ErrMissingFile {
+		fmt.Println("Error getting file from Form")
+		fmt.Println(err)
+		wr.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	body := req.FormValue("body")
 	var updateDTO dto.UserUpdateDTO
-	err = json.NewDecoder(req.Body).Decode(&updateDTO)
+
+	err = json.Unmarshal([]byte(body), &updateDTO)
 
 	if err != nil {
 		fmt.Printf("Error parsing update dto from body")
@@ -183,4 +231,3 @@ req *http.Request) {
 	wr.WriteHeader(http.StatusOK)
 	json.NewEncoder(wr).Encode(user)
 }
-

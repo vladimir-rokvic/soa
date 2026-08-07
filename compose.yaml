@@ -60,6 +60,8 @@ services:
       - 8080:8080
     depends_on:
       - database
+    volumes:
+      - auth_db:/src/uploads
 
   follower-service:
     build:
@@ -113,3 +115,4 @@ networks:
 volumes:
   db:
   tours_db: 
+  auth_db:
