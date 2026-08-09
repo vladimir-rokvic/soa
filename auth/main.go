@@ -66,6 +66,10 @@ func main() {
 	router.HandleFunc("/users/add", controller.Save).Methods("POST")
 	router.HandleFunc("/users/login", controller.LogIn).Methods("POST")
 
+	//STATIC FILES (uploaded profile images)
+	uploadsHandler := http.StripPrefix("/users/uploads/", http.FileServer(http.Dir("./uploads")))
+	router.PathPrefix("/users/uploads/").Handler(uploadsHandler)
+
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

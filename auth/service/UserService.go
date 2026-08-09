@@ -89,8 +89,12 @@ func (user_service *UserService) UpdateUser(user *model.User, dto *dto.UserUpdat
 	user.Username = dto.Username
 	user.Email = dto.Email
 	user.UserRole = model.StringToUserRole(dto.UserRole)
+	user.Bio = dto.Bio
+	user.FirstName = dto.FirstName
+	user.LastName = dto.LastName
+	user.Motto = dto.Motto
 
-	err := user_service.Save(user)
+	err := user_service.UserRepo.Update(user)
 
 	return err
 }
