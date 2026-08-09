@@ -64,3 +64,36 @@
 .blog-description-input:focus {
 	border: 1px solid #d9d9d9;
 }
+
+.add-comment-section {
+	margin: 10px;
+	border: 1px solid #d9d9d9;
+	padding: 10px;
+	border-radius: 10px;
+	display: flex;
+}
+
+.add-comment-section input {
+	border-radius: 10px;
+	font-size: 15px;
+	width: 100%;
+	padding: 8px;
+	border: 0;
+	margin-right: 5px;
+}
+
+.add-comment-section button {
+	border-radius: 10px;
+	font-size: 15px;
+	padding: 8px;
+	background-color: #0082ff;
+	border-color: #0003ff;
+	color: white;
+}
+
+.comment-section {
+	border: 1px solid #d9d9d9;
+	margin-top: 10px;
+	padding: 10px;
+	border-radius: 10px;
+}
