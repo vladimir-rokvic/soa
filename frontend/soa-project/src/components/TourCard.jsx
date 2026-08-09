@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import api from '../config/axios';
 import './TourCard.css';
+import { useState } from 'react';
 
 const TourCard = ({tour}) => {
 	const diffColor = new Map([
@@ -16,9 +17,14 @@ const TourCard = ({tour}) => {
 
 	const navigate = useNavigate();
 
+	const [price, setPrice] = useState(0);
+
 	const handlePublish = async () => {
+		const body = {
+			price: price
+		};
 		try {
-			const res = await api.put(`/tours/publish/${tour.id}`);
+			const res = await api.put(`/tours/publish/${tour.id}`, body);
 			console.log(res.data);
 			window.location.reload(false);
 		} catch(err) {
@@ -31,8 +37,11 @@ const TourCard = ({tour}) => {
 			<div className='tour-card-header'>
 				<h2>{tour.title}</h2>
 				<div className='tour-card-header-buttons'>
-					<button onClick={() => {navigate(`/tours/${tour.id}/edit`)}}>Edit</button>
-					{tour.status === 'Draft' && <button onClick={handlePublish}>Publish</button>}
+					{tour.status === 'Draft' &&
+					<button onClick={() => {navigate(`/tours/${tour.id}/edit`)}}>
+					Edit</button>}
+					{tour.status === 'Draft' &&
+					<button onClick={handlePublish}>Publish</button>}
 				</div>
 			</div>
 			<p>{tour.description}</p>
@@ -45,11 +54,29 @@ const TourCard = ({tour}) => {
 			<br />
 			<label style={{marginTop: '10px'}}>Tags: </label>
 			<div className="tour-card-tags">
-				{tour.tags.length !== 0 && tour.tags.map(t => <p>{t}</p>)}
+				{tour.tags.length !== 0 && tour.tags.map((t, i) => <p key={i}>{t}</p>)}
 			</div>
 			<div className="tour-card-price">
-				<label>Price: </label>
-				<p>{tour.price}</p>
+				{tour.status === 'Draft' ? (<>
+					<div style={{display: 'flex'}}>
+						<label>Price: </label>
+						<p>{price}</p>
+					</div>
+					<input
+						style={{marginTop: '15px'}}
+						type='range'
+						value={price}
+						min="0"
+						max="100"
+						defaultValue="50"
+						onChange={e => setPrice(e.target.value)}
+					/>
+				</>) : (<>
+					<div style={{display: 'flex'}}>
+						<label>Price: </label>
+						<p>{tour.price}</p>
+					</div>
+				</>)}
 			</div>
 		</div>
 	);

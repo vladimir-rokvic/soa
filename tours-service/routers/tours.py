@@ -2,7 +2,8 @@ from fastapi import APIRouter, HTTPException, Form, UploadFile, File
 from bson import ObjectId
 from bson.errors import InvalidId
 from database import tours_collection
-from model.tour import CreateTour, UpdateTour, Tour, TourResponse, Status, Difficulty
+from model.tour import \
+    CreateTour, UpdateTour, Tour, TourResponse, Status, Difficulty, PublishTour
 from model.point import Point
 import json
 import os
@@ -58,6 +59,30 @@ def get_by_author_id(user_id: str):
     return [
         to_response(result) for result in results
     ]
+
+
+@router.put("/publish/{tour_id}", response_model=TourResponse)
+def publish_tour(tour_id: str, body: PublishTour):
+    try:
+        t_id = ObjectId(tour_id)
+    except InvalidId:
+        raise HTTPException(status_code=400, detail="Cannot parse id")
+
+    query = {"_id": t_id}
+    update = {"$set": {"status": "Published", "price": body.price}}
+
+    tours_collection.update_one(query, update)
+
+    res = tours_collection.find_one({"_id": t_id})
+
+    return to_response(res)
+
+
+@router.get("/published", response_model=list[TourResponse])
+def get_published():
+    results = tours_collection.find({"status": "Published"})
+
+    return [to_response(result) for result in results]
 
 
 @router.get("/{tour_id}", response_model=TourResponse)

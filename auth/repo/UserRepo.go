@@ -24,7 +24,9 @@ func (user_repo *UserRepo) GetById(id string) (model.User, error) {
 	return user, result.Error
 }
 
+//Oh no ja sam hashovo hashovan password, oh no
 func (user_repo *UserRepo) Save(user *model.User) error {
+	//TODO: prebaci ovo u servis boga ti(pogledaj komentar gore)
 	//hashovanje sifre radi bezbednosti
 	//10 je default vrednost
 	hashed, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
@@ -34,6 +36,11 @@ func (user_repo *UserRepo) Save(user *model.User) error {
 	}
 
 	result := user_repo.Db.Save(user)
+	return result.Error
+}
+
+func (repo *UserRepo) Update(user *model.User) error {
+	result := repo.Db.Save(user)
 	return result.Error
 }
 

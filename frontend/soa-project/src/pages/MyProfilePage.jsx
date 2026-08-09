@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import PageHeader from '../components/PageHeader'
 import './Page.css'
 import api from '../config/axios';
+import { useAuth } from '../context/AuthContext';
 
 const MyProfilePage = () => {
 	const [profile, setProfile] = useState();
@@ -17,6 +18,8 @@ const MyProfilePage = () => {
 
 	const [file, setFile] = useState(null);
 	const [rawFile, setRawFile] = useState(null);
+
+	const {user, login, logout} = useAuth();
 
 	useEffect(() => {
 		const fetchUserData = async () => {
@@ -61,6 +64,7 @@ const MyProfilePage = () => {
 			motto: motto
 		};
 
+
 		formData.append('body', JSON.stringify(body));
 		if (rawFile) {
 			formData.append('profile_image', rawFile);
@@ -70,6 +74,15 @@ const MyProfilePage = () => {
 			const res = await api.put('/users/myProfile', formData);
 			console.log(res.data);
 			setProfile(res.data);
+			const token = user.token;
+			logout();
+			const logInUser = {
+				id: res.data.id,
+				username: username,
+				token: token,
+				role: res.data.role
+			};
+			login(logInUser);
 		} catch (err) {
 			console.log(err);
 			return;

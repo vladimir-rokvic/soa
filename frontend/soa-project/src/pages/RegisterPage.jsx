@@ -55,8 +55,8 @@ const RegisterPage = () => {
 							value={category} 
 							onChange={e => setCategory(e.target.value)}>
     				  <option value="">-- Select a role --</option>
-    				  <option value="1">Tourist</option>
-    				  <option value="2">Guide</option>
+    				  <option value="2">Tourist</option>
+    				  <option value="1">Guide</option>
     				</select>
 
 					<label>PASSWORD</label>

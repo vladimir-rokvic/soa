@@ -57,3 +57,7 @@ class UpdateTour(BaseModel):
     tags: list[str]
     start_point: CreatePoint | None
     end_point: CreatePoint | None
+
+
+class PublishTour(BaseModel):
+    price: float
