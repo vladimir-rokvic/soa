@@ -107,6 +107,20 @@ services:
     volumes:
       - tours_db:/src/uploads
 
+  purchase-service:
+    build:
+      context: purchase-service
+      dockerfile: Dockerfile
+    image: purchase-service
+    container_name: purchase-service
+    restart: always
+    networks:
+      - service
+    depends_on:
+      - database
+    ports:
+      - 8085:8080
+
 networks:
   service:
     name: service
