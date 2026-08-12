@@ -2,8 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"purchase-service/controller"
 	"purchase-service/models"
+	"purchase-service/repository"
+	"purchase-service/service"
 
+	"github.com/gorilla/mux"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -28,4 +34,37 @@ func init_db() *gorm.DB {
 
 func main() {
 
+	db := init_db()
+	if db == nil {
+		fmt.Println("GG")
+		return
+	}
+
+	sc_repo := repository.ShoppingCartRepo{Db: db}
+	sc_service := service.ShoppingCartService{Repo: &sc_repo}
+	sc_controller := controller.ShoppingCartController{Service: &sc_service}
+
+	oi_repo := repository.OrderItemRepo{Db: db}
+	oi_service := service.OrderItemService{Repo: &oi_repo}
+	oi_controller := controller.OrderItemController{Service: &oi_service}
+
+	router := mux.NewRouter()
+	sc_router := router.PathPrefix("purchase/sc").Subrouter()
+	oi_router := router.PathPrefix("purchase/oi").Subrouter()
+
+	sc_router.HandleFunc("/", sc_controller.GetAll).Methods("GET")
+	sc_router.HandleFunc("/", sc_controller.Save).Methods("POST")
+	sc_router.HandleFunc("/{id}", sc_controller.Delete).Methods("DELETE")
+	sc_router.HandleFunc("/", sc_controller.Update).Methods("PUT")
+	sc_router.HandleFunc("/{id}", sc_controller.GetById).Methods("GET")
+
+	oi_router.HandleFunc("/", oi_controller.GetAll).Methods("GET")
+	oi_router.HandleFunc("/", oi_controller.Save).Methods("POST")
+	oi_router.HandleFunc("/{id}", oi_controller.Delete).Methods("DELETE")
+	oi_router.HandleFunc("/", oi_controller.Update).Methods("PUT")
+	oi_router.HandleFunc("/{id}", oi_controller.GetById).Methods("GET")
+	oi_router.HandleFunc("/sc/{id}", oi_controller.GetByShoppingCartId).Methods("GET")
+
+
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
