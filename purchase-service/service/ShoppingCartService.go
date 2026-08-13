@@ -48,3 +48,9 @@ func (ss *ShoppingCartService) GetById(id string) (models.ShoppingCart, error) {
 
 	return cart, err
 }
+
+func (ss *ShoppingCartService) GetByUserId(id string) (models.ShoppingCart, error) {
+	cart, err := ss.Repo.GetByUserId(id)
+
+	return cart, err
+}

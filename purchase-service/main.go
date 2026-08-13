@@ -57,6 +57,8 @@ func main() {
 	sc_router.HandleFunc("/{id}", sc_controller.Delete).Methods("DELETE")
 	sc_router.HandleFunc("/", sc_controller.Update).Methods("PUT")
 	sc_router.HandleFunc("/{id}", sc_controller.GetById).Methods("GET")
+	sc_router.HandleFunc("/user/{id}", sc_controller.GetByUserId).Methods("GET")
+	sc_router.HandleFunc("/addItem", sc_controller.AddItem).Methods("POST")
 
 	oi_router.HandleFunc("/", oi_controller.GetAll).Methods("GET")
 	oi_router.HandleFunc("/", oi_controller.Save).Methods("POST")

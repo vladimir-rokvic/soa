@@ -43,3 +43,10 @@ func (sr *ShoppingCartRepo) GetById(id string) (models.ShoppingCart, error) {
 
 	return cart, result.Error
 }
+
+func (sr *ShoppingCartRepo) GetByUserId(id string) (models.ShoppingCart, error) {
+	var cart models.ShoppingCart
+	result := sr.Db.Preload("Items").Find(&cart, "user_id = ?", id)
+
+	return cart, result.Error
+}
