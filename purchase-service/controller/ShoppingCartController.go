@@ -15,6 +15,7 @@ import (
 type ShoppingCartController struct {
 	Service *service.ShoppingCartService
 	ItemService *service.OrderItemService
+	TokenService *service.TourTokenService
 }
 
 
@@ -151,17 +152,94 @@ func (sc *ShoppingCartController) AddItem(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var it models.OrderItem
-	it.TourName = item.TourTitle
-	it.Price = item.TourPrice
-	it.TourId, err = uuid.Parse(item.TourId)
-
+	userId, err := uuid.Parse(item.UserId)
 	if err != nil {
-		fmt.Println("Error parsing uuid")
+		fmt.Println("Error parsing user uuid")
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	cart, err := sc.Service.GetByUserId()
+	cart, err := sc.Service.GetByUserId(item.UserId)
+
+	if err != nil {
+		cart = models.ShoppingCart{
+			UserId: userId,
+		}
+
+		_, err = sc.Service.Save(&cart)
+
+		if err != nil {
+			fmt.Println("Error saving cart")
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
+
+	//TODO: Proveri da li je ovo potrebno uopste
+	cart, err = sc.Service.GetByUserId(item.UserId)
+	if err != nil {
+		fmt.Println("Error saving cart")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	var it models.OrderItem
+	it.ShoppingCartID = cart.ID
+	it.TourName = item.TourTitle
+	it.Price = item.TourPrice
+	it.TourId = item.TourId
+
+	_, err = sc.ItemService.Save(&it)
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(it)
+}
+
+func (sc *ShoppingCartController) BuyItems(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+
+	if !ok {
+		fmt.Println("Error getting id from vars")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	cart, err := sc.Service.GetByUserId(id)
+
+	if err != nil {
+		fmt.Println("Error getting items for user")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	userUUID, err := uuid.Parse(id)
+	if err != nil {
+		fmt.Println("Error parsing user id")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	for _, i := range cart.Items {
+		token := models.GenerateToken(userUUID, i)
+		err := sc.TokenService.Save(&token)
+		if err != nil {
+			fmt.Println("Error saving token")
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		_, err = sc.ItemService.Delete(i.ID.String())
+		if err != nil {
+			fmt.Println("Error deleting item")
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
 }

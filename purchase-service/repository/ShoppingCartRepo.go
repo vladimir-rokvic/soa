@@ -39,14 +39,14 @@ func (sr *ShoppingCartRepo) GetAll() ([]models.ShoppingCart, error) {
 
 func (sr *ShoppingCartRepo) GetById(id string) (models.ShoppingCart, error) {
 	var cart models.ShoppingCart
-	result := sr.Db.Preload("Items").Find(&cart, "id = ?", id)
+	result := sr.Db.Preload("Items").First(&cart, "id = ?", id)
 
 	return cart, result.Error
 }
 
 func (sr *ShoppingCartRepo) GetByUserId(id string) (models.ShoppingCart, error) {
 	var cart models.ShoppingCart
-	result := sr.Db.Preload("Items").Find(&cart, "user_id = ?", id)
+	result := sr.Db.Preload("Items").First(&cart, "user_id = ?", id)
 
 	return cart, result.Error
 }

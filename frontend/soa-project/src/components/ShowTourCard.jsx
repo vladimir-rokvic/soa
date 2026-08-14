@@ -1,5 +1,7 @@
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import './TourCard.css'
+import api from '../config/axios';
+import { useAuth } from '../context/AuthContext';
 
 
 const StartPopup = ({point}) => {
@@ -41,9 +43,18 @@ const ShowTourCard = ({tour}) => {
 		['Archived', '#CC3300']
 	]);
 
+	const {user} = useAuth();
+
 	const handleBuy = async () => {
+		const body = {
+			user_id: user.id,
+			tour_title: tour.title,
+			tour_id: tour.id,
+			tour_price: tour.price
+		};
 		try {
-			//TODO
+			const res = await api.post('/purchase/sc/addItem', body);
+			console.log(res.data);
 		} catch (err) {
 			console.log(err);
 		};

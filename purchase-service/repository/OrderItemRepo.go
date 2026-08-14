@@ -40,7 +40,7 @@ func (or *OrderItemRepo) GetAll() ([]models.OrderItem, error) {
 
 func (or *OrderItemRepo) GetById(id string) (models.OrderItem, error) {
 	var item models.OrderItem
-	result := or.Db.Find(&item, "id = ?", id)
+	result := or.Db.First(&item, "id = ?", id)
 
 	return item, result.Error
 }

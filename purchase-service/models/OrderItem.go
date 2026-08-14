@@ -10,7 +10,7 @@ type OrderItem struct {
 	ID uuid.UUID `json:"id"`
 	TourName string `json:"tour_name"`
 	Price float32 `json:"price"`
-	TourId uuid.UUID `json:"tour_id"`
+	TourId string `json:"tour_id"`
 	ShoppingCartID uuid.UUID `json:"shopping_cart_id"`
 }
 
