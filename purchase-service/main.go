@@ -28,6 +28,9 @@ func init_db() *gorm.DB {
 
 	db.AutoMigrate(models.OrderItem{})
 	db.AutoMigrate(models.ShoppingCart{})
+	db.AutoMigrate(models.TourPurchaseToken{})
+	db.AutoMigrate(models.InterestPoint{})
+	db.AutoMigrate(models.TourExecution{})
 
 	return db;
 }
@@ -47,14 +50,23 @@ func main() {
 	oi_service := service.OrderItemService{Repo: &oi_repo}
 	oi_controller := controller.OrderItemController{Service: &oi_service}
 
+	token_repo := repository.TourTokenRepo{Db: db}
+	token_service := service.TourTokenService{Repo: &token_repo}
+
 	sc_controller := controller.ShoppingCartController{
 		Service: &sc_service,
 		ItemService: &oi_service,
+		TokenService: &token_service,
+	}
+
+	token_controller := controller.TokenController{
+		Service: &token_service,
 	}
 
 	router := mux.NewRouter()
 	sc_router := router.PathPrefix("/purchase/sc").Subrouter()
 	oi_router := router.PathPrefix("/purchase/oi").Subrouter()
+	token_router := router.PathPrefix("/purchase/tokens").Subrouter()
 
 	sc_router.HandleFunc("/", sc_controller.GetAll).Methods("GET")
 	sc_router.HandleFunc("/", sc_controller.Save).Methods("POST")
@@ -71,6 +83,8 @@ func main() {
 	oi_router.HandleFunc("/", oi_controller.Update).Methods("PUT")
 	oi_router.HandleFunc("/{id}", oi_controller.GetById).Methods("GET")
 	oi_router.HandleFunc("/sc/{id}", oi_controller.GetByShoppingCartId).Methods("GET")
+
+	token_router.HandleFunc("/user/{id}", token_controller.GetByUserId).Methods("GET")
 
 
 	log.Fatal(http.ListenAndServe(":8080", router))

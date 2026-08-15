@@ -10,10 +10,11 @@ type TokenState int
 const (
 	INACTIVE TokenState = iota
 	ACTIVE
+	COMPLETED
 	ABANDONED
 )
 
-type TourPackageToken struct {
+type TourPurchaseToken struct {
 	ID uuid.UUID
 	UserId uuid.UUID
 	TourId string
@@ -24,6 +25,7 @@ type TourPackageToken struct {
 var stateName = map[TokenState]string {
 	INACTIVE: "Inactive",
 	ACTIVE: "Active",
+	COMPLETED: "Completed",
 	ABANDONED: "Abandoned",
 }
 
@@ -31,8 +33,8 @@ func (ts TokenState) String() string {
 	return stateName[ts]
 }
 
-func GenerateToken(userId uuid.UUID, item OrderItem) TourPackageToken {
-	var ret TourPackageToken
+func GenerateToken(userId uuid.UUID, item OrderItem) TourPurchaseToken {
+	var ret TourPurchaseToken
 
 	ret.UserId = userId
 	ret.TourId = item.TourId
@@ -42,7 +44,7 @@ func GenerateToken(userId uuid.UUID, item OrderItem) TourPackageToken {
 	return ret
 }
 
-func (tpt *TourPackageToken) BeforeCreate(scope *gorm.DB) error {
+func (tpt *TourPurchaseToken) BeforeCreate(scope *gorm.DB) error {
 	tpt.ID = uuid.New()
 	return nil
 }

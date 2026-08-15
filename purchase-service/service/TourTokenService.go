@@ -6,23 +6,29 @@ import (
 )
 
 type TourTokenService struct {
-	Repo repository.TourTokenRepo
+	Repo *repository.TourTokenRepo
 }
 
-func (tts *TourTokenService) Save(token *models.TourPackageToken) error {
+func (tts *TourTokenService) Save(token *models.TourPurchaseToken) error {
 	err := tts.Repo.Save(token)
 
 	return err
 }
 
-func (tts *TourTokenService) Delete(token *models.TourPackageToken) error { 
+func (tts *TourTokenService) Delete(token *models.TourPurchaseToken) error { 
 	err := tts.Repo.Delete(token)
 
 	return err
 }
 
-func (tts *TourTokenService) Update(token *models.TourPackageToken) error {
+func (tts *TourTokenService) Update(token *models.TourPurchaseToken) error {
 	err := tts.Repo.Update(token)
 	
 	return err
+}
+
+func (tts *TourTokenService) GetByUserId(id string) ([]models.TourPurchaseToken, error) {
+	tokens, err := tts.Repo.GetByUserId(id)
+
+	return tokens, err
 }
