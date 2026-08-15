@@ -85,6 +85,8 @@ func main() {
 	oi_router.HandleFunc("/sc/{id}", oi_controller.GetByShoppingCartId).Methods("GET")
 
 	token_router.HandleFunc("/user/{id}", token_controller.GetByUserId).Methods("GET")
+	token_router.HandleFunc("/active/user/{id}", token_controller.GetActiveByUserId).Methods("GET")
+	token_router.HandleFunc("/start/{id}", token_controller.StartTour).Methods("POST")
 
 
 	log.Fatal(http.ListenAndServe(":8080", router))

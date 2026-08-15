@@ -32,3 +32,18 @@ func (tts *TourTokenService) GetByUserId(id string) ([]models.TourPurchaseToken,
 
 	return tokens, err
 }
+
+func (tts *TourTokenService) GetActiveByUserId(id string) (models.TourExecution, error) {
+	te, err := tts.Repo.GetActiveByUserId(id)
+
+	return te, err
+}
+
+func (tts *TourTokenService) GetById(id string) (models.TourPurchaseToken, error) {
+	token, err := tts.Repo.GetById(id)
+
+	return token, err
+}
+
+func (tts *TourTokenService) CreateTourExecution(token TourTokenService) (models.TourExecution, error) {
+}
