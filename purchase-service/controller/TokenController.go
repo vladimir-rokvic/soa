@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"purchase-service/dto"
 	"purchase-service/models"
 	"purchase-service/service"
 
@@ -53,6 +54,7 @@ func (tc *TokenController) GetActiveByUserId(w http.ResponseWriter, r *http.Requ
 
 	if err == gorm.ErrRecordNotFound {
 		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(nil)
 		return
 	}
 
@@ -78,6 +80,16 @@ func (tc *TokenController) StartTour(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var currentPosition dto.CurrentPosDTO
+	err := json.NewDecoder(r.Body).Decode(&currentPosition)
+
+	if err != nil {
+		fmt.Println("Error decoding current position body")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	token, err := tc.Service.GetById(id)
 
 	if err == gorm.ErrRecordNotFound {
@@ -96,7 +108,7 @@ func (tc *TokenController) StartTour(w http.ResponseWriter, r *http.Request) {
 	token.Status = models.ACTIVE
 	tc.Service.Update(&token)
 
-	te, err := tc.Service.CreateTourExecution(token)
+	te, err := tc.Service.CreateTourExecution(currentPosition, token)
 
 	if err != nil {
 		fmt.Println("Error creating tour execution")

@@ -1,8 +1,13 @@
 package service
 
 import (
+	"encoding/json"
+	"net/http"
+	"purchase-service/dto"
 	"purchase-service/models"
 	"purchase-service/repository"
+
+	"github.com/google/uuid"
 )
 
 type TourTokenService struct {
@@ -45,5 +50,57 @@ func (tts *TourTokenService) GetById(id string) (models.TourPurchaseToken, error
 	return token, err
 }
 
-func (tts *TourTokenService) CreateTourExecution(token TourTokenService) (models.TourExecution, error) {
+func getPointFromDTO(pointDTO dto.InterestPointDTO, teId uuid.UUID) models.InterestPoint {
+	point := models.InterestPoint {
+		Lat: pointDTO.Lat,
+		Lng: pointDTO.Lng,
+		TourExecutionID: teId,
+	}
+
+	return point
+}
+
+func (tts *TourTokenService) CreateTourExecution(currentPostion dto.CurrentPosDTO, token models.TourPurchaseToken) (models.TourExecution, error) {
+	te := models.TourExecution{
+		TokenId: token.ID,
+		UserId: token.UserId,
+		Status: models.ACTIVE,
+		CurrentLat: currentPostion.CurrentLat,
+		CurrentLng: currentPostion.CurrentLng,
+	}
+
+	res, err := http.Get("http://tours-service:8080/tours/" + token.TourId)
+
+	if err != nil {
+		return te, err
+	}
+
+	var tour dto.TourDTO
+	err = json.NewDecoder(res.Body).Decode(&tour)
+
+	if err != nil {
+		return te, err
+	}
+
+	err = tts.Repo.SaveTE(&te)
+
+	if err != nil {
+		return te, err
+	}
+
+	start_point := getPointFromDTO(tour.StartPoint, te.ID)
+	err = tts.Repo.SavePoint(&start_point)
+
+	if err != nil {
+		return te, err
+	}
+	
+	end_point := getPointFromDTO(tour.EndPoint, te.ID)
+	err = tts.Repo.SavePoint(&end_point)
+
+	if err != nil {
+		return te, err
+	}
+
+	return te, err
 }

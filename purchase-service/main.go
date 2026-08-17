@@ -29,8 +29,8 @@ func init_db() *gorm.DB {
 	db.AutoMigrate(models.OrderItem{})
 	db.AutoMigrate(models.ShoppingCart{})
 	db.AutoMigrate(models.TourPurchaseToken{})
-	db.AutoMigrate(models.InterestPoint{})
 	db.AutoMigrate(models.TourExecution{})
+	db.AutoMigrate(models.InterestPoint{})
 
 	return db;
 }
