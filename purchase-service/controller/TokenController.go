@@ -121,3 +121,46 @@ func (tc *TokenController) StartTour(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(te)
 }
+
+func (tc *TokenController) UpdateTour(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+
+	if !ok {
+		fmt.Println("Error getting vars")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	var currentPosition dto.CurrentPosDTO
+	err := json.NewDecoder(r.Body).Decode(&currentPosition)
+
+	if err != nil {
+		fmt.Println("Error decoding current position body")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	te, err := tc.Service.GetTEById(id)
+
+	if err != nil {
+		fmt.Println("Error getting tour execution")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	te, err = tc.Service.UpdateTour(&te, currentPosition)
+	
+	if err != nil {
+		fmt.Println("Error updating tour")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(te)
+}

@@ -75,3 +75,23 @@ func (ttr *TourTokenRepo) GetTEById(id string) (models.TourExecution, error) {
 
 	return te, result.Error
 }
+
+func (ttr *TourTokenRepo) UpdatePoint(point *models.InterestPoint) error {
+	result := ttr.Db.Save(point)
+	return result.Error
+}
+
+func (ttr *TourTokenRepo) UpdateTE(te *models.TourExecution) (models.TourExecution, error) {
+	result := ttr.Db.Save(te)
+	ret := models.TourExecution{
+		ID: te.ID,
+		TokenId: te.TokenId,
+		UserId: te.UserId,
+		Status: te.Status,
+		CurrentLat: te.CurrentLat,
+		CurrentLng: te.CurrentLng,
+		TimeEnded: te.TimeEnded,
+		CreatedAt: te.CreatedAt,
+	}
+	return ret, result.Error
+}

@@ -87,6 +87,7 @@ func main() {
 	token_router.HandleFunc("/user/{id}", token_controller.GetByUserId).Methods("GET")
 	token_router.HandleFunc("/active/user/{id}", token_controller.GetActiveByUserId).Methods("GET")
 	token_router.HandleFunc("/start/{id}", token_controller.StartTour).Methods("POST")
+	token_router.HandleFunc("/te/{id}", token_controller.UpdateTour).Methods("PUT")
 
 
 	log.Fatal(http.ListenAndServe(":8080", router))

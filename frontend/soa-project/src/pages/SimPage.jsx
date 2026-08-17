@@ -56,11 +56,11 @@ const ActiveTourPage = ({tour, currentPos, setCurrentPos}) => {
 		//tako nesto
 		const fetchActivity = async () => {
 			const body = {
-				lat: currentPos.lat,
-				lng: currentPos.lng
+				current_lat: currentPos.lat,
+				current_lng: currentPos.lng
 			};
 			try {
-				const res = await api.put("", body);
+				const res = await api.put(`/purchase/tokens/te/${tour.id}`, body);
 				console.log(res.data);
 			} catch(err) {
 				console.log(err);

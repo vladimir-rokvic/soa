@@ -2,10 +2,12 @@ package service
 
 import (
 	"encoding/json"
+	"math"
 	"net/http"
 	"purchase-service/dto"
 	"purchase-service/models"
 	"purchase-service/repository"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -103,4 +105,70 @@ func (tts *TourTokenService) CreateTourExecution(currentPostion dto.CurrentPosDT
 	}
 
 	return te, err
+}
+
+func (tts *TourTokenService) GetTEById(id string) (models.TourExecution, error) {
+	te, err := tts.Repo.GetTEById(id)
+
+	return te, err
+}
+
+func toRadians(degrees float64) float64 {
+	return degrees * math.Pi / 180
+}
+
+func distanceBetweenPoints(lat1, lng1, lat2, lng2 float64) float64 {
+	//u metrima
+	const earthRadius = 6371000.0
+
+	dLat := toRadians(lat2 - lat1)
+	dLng := toRadians(lng2 - lng1)
+
+	lat1Rad := toRadians(lat1)
+	lat2Rad := toRadians(lat2)
+
+	a := math.Sin(dLat/2)*math.Sin(dLat/2) +
+		math.Cos(lat1Rad)*
+			math.Cos(lat2Rad)*
+			math.Sin(dLng/2)*
+			math.Sin(dLng/2)
+
+	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
+
+	return earthRadius * c
+}
+
+func (tts *TourTokenService) UpdateTour(te *models.TourExecution, currentPos dto.CurrentPosDTO) (models.TourExecution, error){
+	te.CurrentLat = currentPos.CurrentLat
+	te.CurrentLng = currentPos.CurrentLng
+
+	for i := range te.Points {
+		p := &te.Points[i]
+
+		d := distanceBetweenPoints(
+			float64(currentPos.CurrentLat),
+			float64(currentPos.CurrentLng),
+			float64(p.Lat),
+			float64(p.Lng),
+			)
+
+		if d <= 100 && p.TimeCompleted.IsZero() {
+			p.TimeCompleted = time.Now()
+
+			err := tts.Repo.UpdatePoint(p)
+			if err != nil {
+				return models.TourExecution{}, err
+			}
+
+			te.TimeEnded = p.TimeCompleted
+		}
+	}
+
+	ret, err := tts.Repo.UpdateTE(te)
+
+	if err != nil {
+		return models.TourExecution{}, err
+	}
+
+	return ret, err
 }
