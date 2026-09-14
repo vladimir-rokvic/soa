@@ -54,7 +54,8 @@ const TourCard = ({tour}) => {
 			<br />
 			<label style={{marginTop: '10px'}}>Tags: </label>
 			<div className="tour-card-tags">
-				{tour.tags.length !== 0 && tour.tags.map((t, i) => <p key={i}>{t}</p>)}
+				{tour.tags.length !== 0 && tour.tags.map((t, i) => 
+					<p key={i} style={{marginLeft: '5px'}}>{t}</p>)}
 			</div>
 			<div className="tour-card-price">
 				{tour.status === 'Draft' ? (<>

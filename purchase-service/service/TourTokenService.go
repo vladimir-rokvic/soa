@@ -159,9 +159,20 @@ func (tts *TourTokenService) UpdateTour(te *models.TourExecution, currentPos dto
 			if err != nil {
 				return models.TourExecution{}, err
 			}
-
-			te.TimeEnded = p.TimeCompleted
 		}
+	}
+
+	allCompleted := true
+	for i := range te.Points {
+		if te.Points[i].TimeCompleted.IsZero() {
+			allCompleted = false
+			break
+		}
+	}
+
+	if allCompleted {
+		te.Status = models.COMPLETED
+		te.TimeEnded = time.Now()
 	}
 
 	ret, err := tts.Repo.UpdateTE(te)

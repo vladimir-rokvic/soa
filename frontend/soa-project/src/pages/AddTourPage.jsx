@@ -171,7 +171,7 @@ const AddTourPage = () => {
 							<div className='tags-container'>
 								{tags?.length !== 0 && tags.map((t, i) => (
 									<>
-										<p key={i}>{t}</p>
+										<p key={i} style={{marginLeft: '5px'}}>{t}</p>
 									</>
 								))}
 							</div>

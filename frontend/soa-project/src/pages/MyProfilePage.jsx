@@ -110,7 +110,7 @@ const MyProfilePage = () => {
 				<div className='user-info'>
 					<div style={{display: 'flex', flexDirection: 'column'}}>
 						<div className='profile-img'>
-							{editing ? (<img src={file} class='pr-img'/>) :
+							{editing ? (<img src={file} className='pr-img'/>) :
 							(<img className='pr-img' src={profile.image_path === '' ? 
 							null : `http://localhost:8080/users/${profile.image_path}`} />)}
 						</div>

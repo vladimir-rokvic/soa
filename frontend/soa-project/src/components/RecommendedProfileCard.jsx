@@ -8,7 +8,9 @@ const RecommendedProfileCard = ({recommendedUser}) => {
 	const handleFollow = async () => {
 		const body = {
 			clientId: user.id,
-			userId: recommendedUser.id
+			userId: recommendedUser.id,
+			clientUsername: user.username,
+			userUsername: recommendedUser.username
 		};
 		console.log(body);
 

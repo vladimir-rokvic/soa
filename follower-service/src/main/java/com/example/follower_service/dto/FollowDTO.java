@@ -6,6 +6,10 @@ public class FollowDTO {
     //Id korisnika kojeg client zeli da zaprati
     private String userId;
 
+    //ista fora kao i ranije
+    private String clientUsername;
+    private String userUsername;
+
     public String getClientId() {
         return clientId;
     }
@@ -20,5 +24,21 @@ public class FollowDTO {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getClientUsername() {
+        return clientUsername;
+    }
+
+    public void setClientUsername(String clientUsername) {
+        this.clientUsername = clientUsername;
+    }
+
+    public String getUserUsername() {
+        return userUsername;
+    }
+
+    public void setUserUsername(String userUsername) {
+        this.userUsername = userUsername;
     }
 }

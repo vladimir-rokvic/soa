@@ -191,11 +191,18 @@ func (sc *ShoppingCartController) AddItem(w http.ResponseWriter, r *http.Request
 	it.Price = item.TourPrice
 	it.TourId = item.TourId
 
+	cart.Price += item.TourPrice
+	sc.Service.Update(&cart)
+
 	_, err = sc.ItemService.Save(&it)
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(it)
+}
+
+func (sc *ShoppingCartController) RemoveItem(w http.ResponseWriter, r http.Request) {
+
 }
 
 func (sc *ShoppingCartController) BuyItems(w http.ResponseWriter, r *http.Request) {

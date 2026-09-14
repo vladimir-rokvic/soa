@@ -10,6 +10,7 @@ type InterestPointDTO struct {
 }
 
 type TourDTO struct {
+	TokenId string `json:"token_id"`
 	Id string `json:"id"`
 	Title string `json:"title"`
 	Description string `json:"description"`

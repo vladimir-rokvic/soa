@@ -1,8 +1,7 @@
+import { useEffect, useState } from 'react';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import './TourCard.css'
 import api from '../config/axios';
-import { useAuth } from '../context/AuthContext';
-
 
 const StartPopup = ({point}) => {
 	return (
@@ -31,7 +30,9 @@ const StartPopup = ({point}) => {
 	);
 };
 
-const ShowTourCard = ({tour}) => {
+const ItemCard = ({id, itemId, onRemove}) => {
+	const [tour, setTour] = useState(null);
+
 	const diffColor = new Map([
 		['Easy', '#00CC00'],
 		['Medium', '#FF9900'], 
@@ -43,22 +44,30 @@ const ShowTourCard = ({tour}) => {
 		['Archived', '#CC3300']
 	]);
 
-	const {user} = useAuth();
-
-	const handleBuy = async () => {
-		const body = {
-			user_id: user.id,
-			tour_title: tour.title,
-			tour_id: tour.id,
-			tour_price: tour.price
+	useEffect(() => {
+		const fetchTour = async () => {
+			try {
+				const res = await api.get(`/tours/${id}`);
+				console.log(res.data);
+				setTour(res.data);
+			} catch (err) {
+				console.log(err);
+			}
 		};
+		fetchTour();
+	}, [id]);
+
+	const handleRemove = async () => {
 		try {
-			const res = await api.post('/purchase/sc/addItem', body);
+			const res = await api.delete(`/purchase/oi/${itemId}`);
 			console.log(res.data);
+			onRemove(itemId);
 		} catch (err) {
 			console.log(err);
-		};
+		}
 	};
+
+	if (!tour) return null;
 
 	return (
 		<div className="show-tour-card">
@@ -66,7 +75,7 @@ const ShowTourCard = ({tour}) => {
 			<div className='tour-card-header'>
 				<h2>{tour.title}</h2>
 				<div className='tour-card-header-buttons'>
-					<button style={{width: '100px'}} onClick={handleBuy}>Add to cart</button>
+					<button style={{width: '100px'}} onClick={handleRemove}>Remove</button>
 				</div>
 			</div>
 			<p>{tour.description}</p>
@@ -107,5 +116,4 @@ const ShowTourCard = ({tour}) => {
 	);
 };
 
-
-export default ShowTourCard;
+export default ItemCard;

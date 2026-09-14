@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import './Page.css'
 import api from '../config/axios';
 import PageHeader from '../components/PageHeader';
+import ItemCard from '../components/ItemCard';
 
 const CartPage = () => {
 	const {user} = useAuth();
@@ -13,7 +14,7 @@ const CartPage = () => {
 			try {
 				const res = await api.get(`/purchase/sc/user/${user.id}`);
 				console.log(res.data);
-				setItems(res.data);
+				setItems(res.data.items);
 			} catch (err) {
 				console.log(err);
 			}
@@ -30,6 +31,10 @@ const CartPage = () => {
 		}
 	};
 
+  	const handleRemove = (itemId) => {
+      	setItems(prev => prev.filter(item => item.id !== itemId));
+  	};
+
 	return(
 		<>
 			<PageHeader />
@@ -42,6 +47,13 @@ const CartPage = () => {
 					>Purchase</button>
 				</div>
 				<div className='cart-page-content'>
+					{items.length !== 0 && items.map(item => (
+						<ItemCard 
+							id={item.tour_id} 
+							key={item.id}
+							itemId={item.id}
+							onRemove={handleRemove}/>
+					))}
 				</div>
 			</div>
 		</>

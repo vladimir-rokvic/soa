@@ -29,7 +29,22 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    //obicna pomocna funkcija nemoj se previse baviti ovime
+    private boolean userExists(String id) {
+        return userRepository.userExists(id);
+    }
+
     public User followUser(FollowDTO dto) {
+        //ako ne postoji kreiraj ga
+        if(!userExists(dto.getClientId())) {
+            User u = new User(dto.getClientId(), dto.getClientUsername());
+            createUser(u);
+        }
+
+        if(!userExists(dto.getUserId())) {
+            User u = new User(dto.getUserId(), dto.getUserUsername());
+            createUser(u);
+        }
         return userRepository.followUser(dto.getClientId(), dto.getUserId());
     }
 

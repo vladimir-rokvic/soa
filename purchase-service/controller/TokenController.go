@@ -35,9 +35,25 @@ func (tc *TokenController) GetByUserId(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var ret []dto.TourDTO
+	for _, t := range tokens {
+		resp, err := http.Get("http://tours-service:8080/tours/" + t.TourId)
+		if err != nil {
+			fmt.Println("Error getting tour")
+			fmt.Println(err)
+		}
+
+		var n dto.TourDTO
+		n.TokenId = t.ID.String()
+		json.NewDecoder(resp.Body).Decode(&n)
+		resp.Body.Close()
+
+		ret = append(ret, n)
+	}
+
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(tokens)
+	json.NewEncoder(w).Encode(ret)
 }
 
 func (tc *TokenController) GetActiveByUserId(w http.ResponseWriter, r *http.Request) {
