@@ -39,6 +39,7 @@ const BlogPage = () => {
 				id={blog.id} 
 				title={blog.title} 
 				description={blog.description}
+				dateCreated={blog.date_created}
 				blogDelete={blogDeleted}
 			/>)}
 		</>

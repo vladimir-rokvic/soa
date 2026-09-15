@@ -28,13 +28,21 @@ const PageHeader = () => {
 		navigate('/tours');
 	};
 	const goToHome = () => {
-		navigate('/')
+		navigate('/');
+	};
+	const goToSim = () => {
+		navigate('/simulation');
+	};
+	const goToCart = () => {
+		navigate('/cart');
 	};
 	const btnList = {
 		"HOME": goToHome, 
 		"BLOG": goToBlog, 
 		"PROFILE": goToProfile, 
-		"TOURS": goToTours
+		"TOURS": goToTours,
+		"SIM": goToSim,
+		"CART": goToCart
 	};
 	return (
 		<div className='page-header-container'>

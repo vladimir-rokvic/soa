@@ -38,8 +38,8 @@ def to_response(doc: dict) -> TourResponse:
         status=doc["status"],
         price=doc["price"],
         author_id=doc["author_id"],
-        start_point=Point(**doc["start_point"]),
-        end_point=Point(**doc["end_point"])
+        start_point=Point(**start_point),
+        end_point=Point(**end_point)
     )
 
 

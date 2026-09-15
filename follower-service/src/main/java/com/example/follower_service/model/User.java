@@ -20,6 +20,13 @@ public class User {
     @Relationship(type = "FOLLOWS", direction = Relationship.Direction.OUTGOING)
     private Set<User> users = new HashSet<>();
 
+    public User() {}
+
+    public User(String id, String username) {
+        this.id = id;
+        this.username = username;
+    }
+
     public String getId() {
         return id;
     }

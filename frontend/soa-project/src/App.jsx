@@ -9,6 +9,8 @@ import MyProfilePage from "./pages/MyProfilePage";
 import ToursPage from "./pages/ToursPage";
 import AddTourPage from "./pages/AddTourPage";
 import EditTourPage from "./pages/EditTourPage";
+import CartPage from "./pages/CartPage";
+import SimPage from "./pages/SimPage";
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -21,6 +23,8 @@ function AppRoutes() {
       <Route path="/tours" element={<ToursPage />} />
       <Route path="/tours/add" element={<AddTourPage />} />
       <Route path="/tours/:id/edit" element={<EditTourPage />} />
+      <Route path="/cart" element={<CartPage />} />
+      <Route path="/simulation" element={<SimPage />} />
     </Routes>
   );
 }

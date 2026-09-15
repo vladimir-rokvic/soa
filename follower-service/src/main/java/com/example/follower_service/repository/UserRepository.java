@@ -44,4 +44,10 @@ public interface UserRepository extends Neo4jRepository<User, String> {
            LIMIT 10
     """)
     List<User> findRecommendationsByCount(@Param("userId") String userId);
+
+    @Query("""
+            MATCH (u:User {id: $id})
+            RETURN count(u) > 0
+    """)
+    boolean userExists(@Param("id") String id);
 }
