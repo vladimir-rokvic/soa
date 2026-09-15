@@ -57,16 +57,6 @@ const ItemCard = ({id, itemId, onRemove}) => {
 		fetchTour();
 	}, [id]);
 
-	const handleRemove = async () => {
-		try {
-			const res = await api.delete(`/purchase/oi/${itemId}`);
-			console.log(res.data);
-			onRemove(itemId);
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
 	if (!tour) return null;
 
 	return (
@@ -75,7 +65,7 @@ const ItemCard = ({id, itemId, onRemove}) => {
 			<div className='tour-card-header'>
 				<h2>{tour.title}</h2>
 				<div className='tour-card-header-buttons'>
-					<button style={{width: '100px'}} onClick={handleRemove}>Remove</button>
+					<button style={{width: '100px'}} onClick={() => {onRemove(itemId)}}>Remove</button>
 				</div>
 			</div>
 			<p>{tour.description}</p>

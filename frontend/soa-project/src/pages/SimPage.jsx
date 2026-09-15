@@ -5,16 +5,18 @@ import api from '../config/axios';
 import { useAuth } from '../context/AuthContext';
 import TourToken from '../components/TourToken';
 import { MapContainer, Marker, TileLayer, useMapEvents } from 'react-leaflet';
+import ActiveTourComp from '../components/ActiveTourComp';
 
-const MapClickHandler = ({setCurrentPos}) => {
+const MapClickHandler = ({setCurrentPos, updatedPos}) => {
 	useMapEvents({
 		click(e) {
 			setCurrentPos(e.latlng);
+			if(updatedPos) updatedPos();
 		}
 	});
 };
 
-const NoActiveTourPage = ({user, currentPos, setCurrentPos}) => {
+const NoActiveTourPage = ({user, currentPos, setCurrentPos, setActiveTour}) => {
 	const [tokens, setTokens] = useState([]);
 
 	useEffect(() => {
@@ -34,7 +36,11 @@ const NoActiveTourPage = ({user, currentPos, setCurrentPos}) => {
 			<PageHeader />
 			<div className='sim-page'>
 				{tokens?.length !== 0 && tokens.map((t, i) => (
-					<TourToken tour={t} key={t.token_id}/>
+					<TourToken 
+						tour={t}
+						currentPos={currentPos}
+						key={t.token_id ?? i}
+						setActiveTour={setActiveTour}/>
 				))}
 			</div>
 			<div className='no-tour-map'>
@@ -51,18 +57,18 @@ const NoActiveTourPage = ({user, currentPos, setCurrentPos}) => {
 	);
 };
 
-const ActiveTourPage = ({tour, currentPos, setCurrentPos}) => {
+const ActiveTourPage = ({tour, currentPos, setCurrentPos, setActiveTour}) => {
 	const currentPosRef = useRef(currentPos);
-	
+
 	useEffect(() => {
 		currentPosRef.current = currentPos;
 	}, [currentPos]);
-	
+
 	useEffect(() => {
 		const fetchActivity = async () => {
 			const pos = currentPosRef.current;
 			if (!pos) return;
-	
+
 			const body = {
 				current_lat: pos.lat,
 				current_lng: pos.lng
@@ -70,32 +76,48 @@ const ActiveTourPage = ({tour, currentPos, setCurrentPos}) => {
 			try {
 				const res = await api.put(`/purchase/tokens/te/${tour.id}`, body);
 				console.log(res.data);
+				if(res.data) {
+					setActiveTour(null);
+					console.log("Tour completed");
+				}
 			} catch(err) {
 				console.log(err);
-			}
+			};
 		};
-	
+
 		const interval = setInterval(fetchActivity, 10000);
+
 		return () => clearInterval(interval);
 	}, [tour.id]);
+
+	const updatedPos = async () => {
+		try {
+			const res = await api.put(`/purchase/tokens/te/${tour.id}/activity`);
+			console.log(res.data);
+		} catch(err) {
+			console.log(err);
+		};
+	};
 
 	return (
 		<>
 			<PageHeader />
 			<div className='sim-page'>
-				<h1>{tour.title}</h1>
+				<ActiveTourComp te={tour} setActiveTour={setActiveTour}/>
 			</div>
 			<div className='no-tour-map'>
 				<MapContainer style={{width: '100%', height: '100%'}} zoom={13} scrollWheelZoom={false} 
-					center={[tour.points[0].Lat, tour.points[0].Lng]}>
+					center={[tour.points[0]?.Lat, tour.points[0]?.Lng]}>
 					<TileLayer 
 						attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       					url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 					/>
-					<MapClickHandler setCurrentPos={setCurrentPos}/>
+					<MapClickHandler
+						updatedPos={updatedPos}
+						setCurrentPos={setCurrentPos}/>
 					{currentPos && (<Marker position={currentPos}/>)}
-					{tour.points.length !== 0 && tour.points.map(p => (
-							<Marker position={[p.Lat, p.Lng]}>
+					{tour.points?.length !== 0 && tour.points.map(p => (
+							<Marker position={[p.Lat, p.Lng]} key={p.ID}>
 							</Marker>
 						)
 					)}
@@ -113,6 +135,7 @@ const SimPage = () => {
 
 	useEffect(() => {
 		const fetchActiveTour = async () => {
+			if(activeTour) return;
 			try {
 				const res = await api.get(`/purchase/tokens/active/user/${user.id}`);
 				console.log(res.data);
@@ -127,9 +150,7 @@ const SimPage = () => {
 		fetchActiveTour();
 	}, []);
 
-	if(loading) {
-		return <p>Loading</p>;
-	}
+	if(loading) return;
 
 	return (
 		<>
@@ -138,11 +159,13 @@ const SimPage = () => {
 					tour={activeTour}
 					currentPos={currentPos}
 					setCurrentPos={setCurrentPos}
+					setActiveTour={setActiveTour}
 				/>)
 				: (<NoActiveTourPage 
 						currentPos={currentPos}
 						setCurrentPos={setCurrentPos}
 						user={user}
+						setActiveTour={setActiveTour}
 				/>)}
 		</>
 	);

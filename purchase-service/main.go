@@ -76,6 +76,7 @@ func main() {
 	sc_router.HandleFunc("/user/{id}", sc_controller.GetByUserId).Methods("GET")
 	sc_router.HandleFunc("/user/{id}", sc_controller.BuyItems).Methods("POST")
 	sc_router.HandleFunc("/addItem", sc_controller.AddItem).Methods("POST")
+	sc_router.HandleFunc("/removeItem/{id}", sc_controller.RemoveItem).Methods("DELETE")
 
 	oi_router.HandleFunc("/", oi_controller.GetAll).Methods("GET")
 	oi_router.HandleFunc("/", oi_controller.Save).Methods("POST")
@@ -87,7 +88,10 @@ func main() {
 	token_router.HandleFunc("/user/{id}", token_controller.GetByUserId).Methods("GET")
 	token_router.HandleFunc("/active/user/{id}", token_controller.GetActiveByUserId).Methods("GET")
 	token_router.HandleFunc("/start/{id}", token_controller.StartTour).Methods("POST")
+	token_router.HandleFunc("/te/abandon/{id}", token_controller.AbandonTour).Methods("PUT")
 	token_router.HandleFunc("/te/{id}", token_controller.UpdateTour).Methods("PUT")
+	token_router.HandleFunc("/te/{id}/activity", token_controller.UpdateActivity).Methods("PUT")
+	token_router.HandleFunc("/{id}/tour", token_controller.GetTourFromToken).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

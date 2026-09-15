@@ -1,7 +1,7 @@
 import api from '../config/axios';
 import './TourToken.css'
 
-const TourToken = ({tour, currentPos}) => {
+const TourToken = ({tour, currentPos, setActiveTour}) => {
 	const diffColor = new Map([
 		['Easy', '#00CC00'],
 		['Medium', '#FF9900'], 
@@ -29,6 +29,7 @@ const TourToken = ({tour, currentPos}) => {
 		try {
 			const res = await api.post(`/purchase/tokens/start/${tour.token_id}`, body);
 			console.log(res.data);
+			setActiveTour(res.data);
 		} catch(err) {
 			console.log(err);
 		}

@@ -201,8 +201,44 @@ func (sc *ShoppingCartController) AddItem(w http.ResponseWriter, r *http.Request
 	json.NewEncoder(w).Encode(it)
 }
 
-func (sc *ShoppingCartController) RemoveItem(w http.ResponseWriter, r http.Request) {
+func (sc *ShoppingCartController) RemoveItem(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
 
+	if !ok {
+		fmt.Println("Error getting vars")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	
+	item, err := sc.ItemService.Delete(id)
+	if err != nil {
+		fmt.Println("Error deleting item")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	
+	cart, err := sc.Service.GetById(item.ShoppingCartID.String())
+	if err != nil {
+		fmt.Println("Error getting cart")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	cart.Price -= item.Price
+	ret, err := sc.Service.Update(&cart)
+	if err != nil {
+		fmt.Println("Error updating cart")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(ret)
 }
 
 func (sc *ShoppingCartController) BuyItems(w http.ResponseWriter, r *http.Request) {
@@ -249,4 +285,17 @@ func (sc *ShoppingCartController) BuyItems(w http.ResponseWriter, r *http.Reques
 			return
 		}
 	}
+
+	cart.Price = 0
+	_, err = sc.Service.Update(&cart)
+		if err != nil {
+			fmt.Println("Error updating cart")
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(cart)
 }

@@ -12,7 +12,7 @@ type ShoppingCartRepo struct {
 
 
 func (sr *ShoppingCartRepo) Update(sc *models.ShoppingCart) (*models.ShoppingCart, error) {
-	result := sr.Db.Save(sc)
+	result := sr.Db.Omit("Items").Save(sc)
 
 	return sc, result.Error
 }

@@ -79,6 +79,7 @@ func (tts *TourTokenService) CreateTourExecution(currentPostion dto.CurrentPosDT
 
 	var tour dto.TourDTO
 	err = json.NewDecoder(res.Body).Decode(&tour)
+	defer res.Body.Close()
 
 	if err != nil {
 		return te, err
@@ -138,7 +139,7 @@ func distanceBetweenPoints(lat1, lng1, lat2, lng2 float64) float64 {
 	return earthRadius * c
 }
 
-func (tts *TourTokenService) UpdateTour(te *models.TourExecution, currentPos dto.CurrentPosDTO) (models.TourExecution, error){
+func (tts *TourTokenService) UpdateTour(te *models.TourExecution, currentPos dto.CurrentPosDTO) (models.TourExecution, error, bool) {
 	te.CurrentLat = currentPos.CurrentLat
 	te.CurrentLng = currentPos.CurrentLng
 
@@ -157,7 +158,7 @@ func (tts *TourTokenService) UpdateTour(te *models.TourExecution, currentPos dto
 
 			err := tts.Repo.UpdatePoint(p)
 			if err != nil {
-				return models.TourExecution{}, err
+				return models.TourExecution{}, err, false
 			}
 		}
 	}
@@ -178,8 +179,21 @@ func (tts *TourTokenService) UpdateTour(te *models.TourExecution, currentPos dto
 	ret, err := tts.Repo.UpdateTE(te)
 
 	if err != nil {
-		return models.TourExecution{}, err
+		return models.TourExecution{}, err, allCompleted
 	}
 
-	return ret, err
+	return ret, err, allCompleted
+}
+
+func (ts *TourTokenService) AbandonTE(te models.TourExecution) (models.TourExecution, error) {
+	te.Status = models.ABANDONED
+	te.TimeEnded = time.Now()
+
+	return ts.Repo.UpdateTE(&te)
+}
+
+func (ts *TourTokenService) UpdateActivity(te models.TourExecution) (models.TourExecution, error) {
+	te.LastActivityTime = time.Now()
+
+	return ts.Repo.UpdateTE(&te)
 }

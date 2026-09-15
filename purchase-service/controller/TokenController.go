@@ -167,7 +167,7 @@ func (tc *TokenController) UpdateTour(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	te, err = tc.Service.UpdateTour(&te, currentPosition)
+	te, err, completed := tc.Service.UpdateTour(&te, currentPosition)
 	
 	if err != nil {
 		fmt.Println("Error updating tour")
@@ -176,7 +176,105 @@ func (tc *TokenController) UpdateTour(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(completed)
+}
+
+func (tc *TokenController) GetTourFromToken(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+
+	if !ok {
+		fmt.Println("Error getting vars")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	token, err := tc.Service.GetById(id)
+	if err != nil {
+		fmt.Println("Error getting token by id")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	res, err := http.Get("http://tours-service:8080/tours/" + token.TourId)
+	if err != nil {
+		fmt.Println("Error getting tour from tours service")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	var n dto.TourDTO
+	n.TokenId = token.ID.String()
+	json.NewDecoder(res.Body).Decode(&n)
+	res.Body.Close()
+
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(te)
+	json.NewEncoder(w).Encode(n)
+}
+
+func (tc *TokenController) AbandonTour(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+
+	if !ok {
+		fmt.Println("Error getting vars")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	te, err := tc.Service.GetTEById(id)
+	if err != nil {
+		fmt.Println("Error getting tour execution")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	ret, err := tc.Service.AbandonTE(te)
+	if err != nil {
+		fmt.Println("Error updating te")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(ret)
+}
+
+func (tc *TokenController) UpdateActivity(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+
+	if !ok {
+		fmt.Println("Error getting vars")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	te, err := tc.Service.GetTEById(id)
+	if err != nil {
+		fmt.Println("Error getting tour execution")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	ret, err := tc.Service.UpdateActivity(te)
+	if err != nil {
+		fmt.Println("Error updating te")
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(ret)
 }

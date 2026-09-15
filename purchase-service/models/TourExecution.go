@@ -24,6 +24,7 @@ type TourExecution struct {
 	CurrentLng float32 `json:"current_lng"`
 	//Ovo ce biti januar 1, godina 1 mogu da koristim IsZero()
 	TimeEnded time.Time `json:"time_ended"`
+	LastActivityTime time.Time `json:"last_activity_time"`
 	CreatedAt time.Time `json:"time_started"`
 	Points []InterestPoint `json:"points"`
 }

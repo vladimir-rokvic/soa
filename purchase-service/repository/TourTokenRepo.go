@@ -82,7 +82,7 @@ func (ttr *TourTokenRepo) UpdatePoint(point *models.InterestPoint) error {
 }
 
 func (ttr *TourTokenRepo) UpdateTE(te *models.TourExecution) (models.TourExecution, error) {
-	result := ttr.Db.Save(te)
+	result := ttr.Db.Omit("Points").Save(te)
 	ret := models.TourExecution{
 		ID: te.ID,
 		TokenId: te.TokenId,
