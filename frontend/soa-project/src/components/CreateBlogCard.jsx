@@ -6,8 +6,16 @@ import api from '../config/axios';
 const CreateBlogCard = ({blogCreated}) => {
 	const [blogTitle, setBlogTitle] = useState('');
 	const [blogDescription, setBlogDescription] = useState('');
+	const [previews, setPreviews] = useState([]);
+	const [rawFiles, setRawFiles] = useState([]);
 
 	const {user} = useAuth();
+
+	const handleFileChange = (e) => {
+		const files = Array.from(e.target.files);
+		setRawFiles(files);
+		setPreviews(files.map(f => URL.createObjectURL(f)));
+	};
 
 	const handleSave = async () => {
 		const body = {
@@ -16,11 +24,19 @@ const CreateBlogCard = ({blogCreated}) => {
 			author_id: user.id
 		};
 
+		const formData = new FormData();
+		formData.append('body', JSON.stringify(body));
+		rawFiles.forEach(file => {
+			formData.append('images', file);
+		});
+
 		try {
-			const res = await api.post('/blog/', body);
+			const res = await api.post('/blog/', formData);
 			console.log(res.data);
 			setBlogDescription('');
 			setBlogTitle('');
+			setRawFiles([]);
+			setPreviews([]);
 			blogCreated(res.data);
 		} catch (err) {
 			console.log(err);
@@ -43,7 +59,27 @@ const CreateBlogCard = ({blogCreated}) => {
 				value={blogDescription}
 				placeholder='Enter description here'
 				onChange={(e) => {setBlogDescription(e.target.value)}}
-				/>	
+				/>
+			<div style={{display: 'flex', flexDirection: 'column', marginTop: '10px'}}>
+				<label 
+					style={{cursor: 'pointer', margin: '5px auto'}}
+					htmlFor='blog-image-upload'>Add images</label>
+				<input 
+					id='blog-image-upload'
+					type='file'
+					accept='image/png, image/jpeg'
+					multiple
+					onChange={handleFileChange}
+					style={{display: 'none'}}
+				/>
+				{previews.length > 0 && (
+					<div style={{display: 'flex', flexWrap: 'wrap', gap: '5px'}}>
+						{previews.map((src, i) => (
+							<img key={i} src={src} style={{maxWidth: '80px', maxHeight: '80px'}} />
+						))}
+					</div>
+				)}
+			</div>
 		</div>
 	);
 };

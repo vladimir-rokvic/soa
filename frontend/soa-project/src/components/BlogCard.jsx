@@ -54,7 +54,7 @@ const EditingCard = ({id, title, description, dateCreated, onSave, onCancel}) =>
 	);
 };
 
-const BlogCard = ({id, title, description, dateCreated, blogDelete}) => {
+const BlogCard = ({id, title, description, dateCreated, blogDelete, images}) => {
 	const [editing, setEditing] = useState(false);
 	const [cardTitle, setCardTitle] = useState(title);
 	const [cardDescription, setCardDescription] = useState(description);
@@ -115,6 +115,17 @@ const BlogCard = ({id, title, description, dateCreated, blogDelete}) => {
 				</div>
 			</div>
 			<p>{cardDescription}</p>
+				{images?.length > 0 && (
+				<div style={{display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '10px'}}>
+					{images.map((img) => (
+						<img
+							key={img.id}
+							src={"http://localhost:8000" + img.path}
+							style={{maxWidth: '100px', maxHeight: '100px', borderRadius: '5px'}}
+						/>
+					))}
+				</div>
+			)}
 		</div>)}
 		</>
 	);

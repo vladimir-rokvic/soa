@@ -5,8 +5,12 @@ import (
 	"blog_service/service"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
@@ -29,11 +33,71 @@ func (controller *BlogController) GetAll(writer http.ResponseWriter, req *http.R
 }
 
 func (controller *BlogController) Save(writer http.ResponseWriter, req *http.Request) {
+	err := req.ParseMultipartForm(1024 * 250)
+	if err != nil {
+		fmt.Println("Error parsing multipart form")
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	body := req.FormValue("body")
 	var blogDto dto.BlogDTO
+	err = json.Unmarshal([]byte(body), &blogDto)
+	if err != nil {
+		fmt.Println("Error parsing blog dto from body")
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
-	json.NewDecoder(req.Body).Decode(&blogDto)
+	var imagePaths []string
+	files := req.MultipartForm.File["images"]
 
-	blog, err := controller.Service.Save(blogDto)
+	err = os.MkdirAll("./uploads", 0755)
+	if err != nil {
+		fmt.Println("Error making dir uploads")
+		fmt.Println(err)
+		writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	for _, fileHeader := range files {
+		file, err := fileHeader.Open()
+		if err != nil {
+			fmt.Println("Error opening uploaded file")
+			fmt.Println(err)
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		ext := filepath.Ext(fileHeader.Filename)
+		filename := uuid.New().String() + ext
+		fp := filepath.Join("./uploads", filename)
+
+		dst, err := os.Create(fp)
+		if err != nil {
+			file.Close()
+			fmt.Println("Error creating file on disk")
+			fmt.Println(err)
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		_, err = io.Copy(dst, file)
+		file.Close()
+		dst.Close()
+		if err != nil {
+			fmt.Println("Error writing file")
+			fmt.Println(err)
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		imagePaths = append(imagePaths, "/blog/uploads/"+filename)
+	}
+
+	blog, err := controller.Service.Save(blogDto, imagePaths)
 	if err != nil {
 		fmt.Println("Error saving blog")
 		fmt.Println(err)

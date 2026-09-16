@@ -13,7 +13,8 @@ type Blog struct {
 	Title string `json:"title"`
 	Description string `json:"description"`
 	CreatedAt time.Time `json:"date_created"`
-	Comments []Comment `json:"comments"`
+	Comments []Comment `json:"comments" gorm:"constraint:OnDelete:CASCADE"`
+	Images []BlogImage `json:"images" gorm:"constraint:OnDelete:CASCADE"`
 }
 
 func (blog *Blog) BeforeCreate(scope *gorm.DB) error {

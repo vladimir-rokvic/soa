@@ -41,6 +41,7 @@ const BlogPage = () => {
 				description={blog.description}
 				dateCreated={blog.date_created}
 				blogDelete={blogDeleted}
+				images={blog.images}
 			/>)}
 		</>
 	);

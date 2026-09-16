@@ -28,6 +28,7 @@ func init_db() *gorm.DB {
 	}
 
 	db.AutoMigrate(model.Blog{})
+	db.AutoMigrate(model.BlogImage{})
 	db.AutoMigrate(model.Comment{})
 
 	return db
@@ -64,6 +65,9 @@ func main() {
 	comment_router.HandleFunc("/", comment_controller.Update).Methods("PUT")
 	comment_router.HandleFunc("/{id}", comment_controller.GetById).Methods("GET")
 	comment_router.HandleFunc("/{id}", comment_controller.Delete).Methods("DELETE")
+
+	uploadsHandler := http.StripPrefix("/blog/uploads/", http.FileServer(http.Dir("./uploads")))
+	router.PathPrefix("/blog/uploads/").Handler(uploadsHandler)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

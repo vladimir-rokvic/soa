@@ -23,12 +23,21 @@ func (service *BlogService) GetById(uuid string) (model.Blog, error) {
 	return blog, err
 }
 
-func (service *BlogService) Save(blogDto dto.BlogDTO) (model.Blog, error) {
+func (service *BlogService) Save(blogDto dto.BlogDTO, imagePaths []string) (model.Blog, error) {
+	var images []model.BlogImage
+	for _, path := range imagePaths {
+		images = append(images, model.BlogImage{
+			Path: path,
+		})
+	}
+
 	var blog = model.Blog{
 		AuthorID: blogDto.AuthorID,
 		Title: blogDto.Title,
 		Description: blogDto.Description,
+		Images: images,
 	}
+
 	blog, err := service.Repository.Save(blog)
 	return blog, err
 }
